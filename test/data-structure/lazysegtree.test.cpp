@@ -7,15 +7,17 @@
 
 using namespace std;
 
+using mint = modint998244353;
+
 // セグ木のモノイド（値、区間の長さ）
 struct S {
-    mint998244353 val;
+    mint val;
     int size;
 };
 
 // 作用素（b, c） -> f(x) = b * x + c
 struct F {
-    mint998244353 b, c;
+    mint b, c;
 };
 
 S op(S a, S b) {
@@ -46,7 +48,7 @@ int main() {
     for (int i = 0; i < n; i++) {
         long long v;
         cin >> v;
-        a[i] = S{mint998244353(v), 1};
+        a[i] = S{mint(v), 1};
     }
 
     lazysegtree<S, op, e, F, mapping, composition, id> seg(a);
@@ -58,7 +60,7 @@ int main() {
             int l, r;
             long long b, c;
             cin >> l >> r >> b >> c;
-            seg.apply(l, r, F{mint998244353(b), mint998244353(c)});
+            seg.apply(l, r, F{mint(b), mint(c)});
         } else {
             int l, r;
             cin >> l >> r;

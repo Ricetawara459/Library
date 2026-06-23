@@ -1,45 +1,71 @@
-#define PROBLEM "https://judge.yosupo.jp/problem/point_add_range_sum"
+#define PROBLEM "https://judge.yosupo.jp/problem/range_affine_range_sum"
 
 #include <iostream>
 #include <vector>
-#include "../../src/data-structure/segment_tree.hpp" // 作成したセグ木をインクルード
+#include "../../src/data-structure/lazysegtree.hpp"
+#include "../../src/math/modint.hpp"
 
 using namespace std;
 
-// セグ木に持たせる演算と単位元
-long long op(long long a, long long b) { return a + b; }
-long long e() { return 0LL; }
+using mint = modint998244353;
+
+// セグ木のモノイド（値、区間の長さ）
+struct S {
+    mint val;
+    int size;
+};
+
+// 作用素（b, c） -> f(x) = b * x + c
+struct F {
+    mint b, c;
+};
+
+S op(S a, S b) {
+    return S{a.val + b.val, a.size + b.size};
+}
+S e() {
+    return S{0, 0};
+}
+S mapping(F f, S x) {
+    return S{f.b * x.val + f.c * x.size, x.size};
+}
+F composition(F f, F g) {
+    // f(g(x)) = f(b_g * x + c_g) = b_f * (b_g * x + c_g) + c_f
+    return F{f.b * g.b, f.b * g.c + f.c};
+}
+F id() {
+    return F{1, 0};
+}
 
 int main() {
-    // 高速化
     cin.tie(nullptr);
     ios::sync_with_stdio(false);
 
     int n, q;
     if (!(cin >> n >> q)) return 0;
 
-    vector<long long> a(n);
+    vector<S> a(n);
     for (int i = 0; i < n; i++) {
-        cin >> a[i];
+        long long v;
+        cin >> v;
+        a[i] = S{mint(v), 1};
     }
 
-    // セグ木の初期化
-    segtree<long long, op, e> seg(a);
+    lazysegtree<S, op, e, F, mapping, composition, id> seg(a);
 
     for (int i = 0; i < q; i++) {
         int type;
         cin >> type;
         if (type == 0) {
-            int p;
-            long long x;
-            cin >> p >> x;
-            // 点加算
-            seg.set(p, seg.get(p) + x);
+            int l, r;
+            long long b, c;
+            cin >> l >> r >> b >> c;
+            seg.apply(l, r, F{mint(b), mint(c)});
         } else {
             int l, r;
             cin >> l >> r;
-            // 区間和取得
-            cout << seg.prod(l, r) << "\n";
+            // 【修正】末尾に () を追加して整数値を取得
+            cout << seg.prod(l, r).val.val() << "\n";
         }
     }
 

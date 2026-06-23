@@ -6,57 +6,151 @@
 #include <numeric>
 #include <cassert>
 
+namespace internal {
+
+std::vector<int> sa_is(const std::vector<int>& s, int upper) {
+    int n = int(s.size());
+    if (n == 0) return {};
+    if (n == 1) return {0};
+    if (n == 2) {
+        if (s[0] < s[1]) return {0, 1};
+        return {1, 0};
+    }
+
+    std::vector<int> sa(n);
+    std::vector<bool> ls(n);
+    for (int i = n - 2; i >= 0; i--) {
+        ls[i] = (s[i] == s[i + 1]) ? ls[i + 1] : (s[i] < s[i + 1]);
+    }
+    std::vector<int> sum_l(upper + 1), sum_s(upper + 1);
+    for (int i = 0; i < n; i++) {
+        if (!ls[i]) sum_l[s[i]]++;
+        else sum_s[s[i]]++;
+    }
+    for (int i = 0; i <= upper; i++) {
+        if (i > 0) sum_l[i] += sum_s[i - 1];
+        sum_s[i] += sum_l[i];
+    }
+
+    auto induce = [&](const std::vector<int>& lms) {
+        std::fill(sa.begin(), sa.end(), -1);
+        std::vector<int> buf = sum_s;
+        for (auto d : lms) {
+            if (d == n) continue;
+            sa[--buf[s[d]]] = d;
+        }
+        buf = sum_l;
+        if (n > 0) {
+            int d = n - 1;
+            if (!ls[d]) sa[buf[s[d]]++] = d;
+        }
+        for (int i = 0; i < n; i++) {
+            int v = sa[i];
+            if (v >= 1 && !ls[v - 1]) {
+                sa[buf[s[v - 1]]++] = v - 1;
+            }
+        }
+        buf = sum_s;
+        for (int i = n - 1; i >= 0; i--) {
+            int v = sa[i];
+            if (v >= 1 && ls[v - 1]) {
+                sa[--buf[s[v - 1]]] = v - 1;
+            }
+        }
+    };
+
+    std::vector<int> lms_map(n + 1, -1);
+    int m = 0;
+    for (int i = 1; i < n; i++) {
+        if (!ls[i - 1] && ls[i]) {
+            lms_map[i] = m++;
+        }
+    }
+    std::vector<int> lms;
+    lms.reserve(m);
+    for (int i = 1; i < n; i++) {
+        if (!ls[i - 1] && ls[i]) {
+            lms.push_back(i);
+        }
+    }
+
+    induce(lms);
+
+    if (m > 0) {
+        std::vector<int> sorted_lms;
+        sorted_lms.reserve(m);
+        for (int v : sa) {
+            if (lms_map[v] != -1) sorted_lms.push_back(v);
+        }
+        std::vector<int> rec_s(m);
+        int rec_upper = 0;
+        rec_s[lms_map[sorted_lms[0]]] = 0;
+        for (int i = 1; i < m; i++) {
+            int l = sorted_lms[i - 1], r = sorted_lms[i];
+            int end_l = (lms_map[l] + 1 < m) ? lms[lms_map[l] + 1] : n;
+            int end_r = (lms_map[r] + 1 < m) ? lms[lms_map[r] + 1] : n;
+            bool same = true;
+            if (end_l - l != end_r - r) {
+                same = false;
+            } else {
+                while (l < end_l) {
+                    if (s[l] != s[r]) {
+                        same = false;
+                        break;
+                    }
+                    l++;
+                    r++;
+                }
+                if (l == n || s[l] != s[r]) same = false;
+            }
+            if (!same) rec_upper++;
+            rec_s[lms_map[sorted_lms[i]]] = rec_upper;
+        }
+        auto rec_sa = sa_is(rec_s, rec_upper);
+        for (int i = 0; i < m; i++) {
+            sorted_lms[i] = lms[rec_sa[i]];
+        }
+        induce(sorted_lms);
+    }
+    return sa;
+}
+
+} // namespace internal
+
+template <class T>
+std::vector<int> suffix_array(const std::vector<T>& s, int upper) {
+    assert(0 <= upper);
+    for (int d : s) {
+        assert(0 <= d && d <= upper);
+    }
+    return internal::sa_is(s, upper);
+}
+
 template <class T>
 std::vector<int> suffix_array(const std::vector<T>& s) {
     int n = int(s.size());
-    if (n == 0) return {};
-    
-    // 最初のランク付けのために座標圧縮
-    std::vector<T> vals = s;
-    std::sort(vals.begin(), vals.end());
-    vals.erase(std::unique(vals.begin(), vals.end()), vals.end());
-    
-    std::vector<int> sa(n), rank(n), next_rank(n), sa_tmp(n);
-    for (int i = 0; i < n; i++) {
-        sa[i] = i;
-        rank[i] = std::lower_bound(vals.begin(), vals.end(), s[i]) - vals.begin();
+    std::vector<int> idx(n);
+    std::iota(idx.begin(), idx.end(), 0);
+    std::sort(idx.begin(), idx.end(), [&](int l, int r) { return s[l] < s[r]; });
+    std::vector<int> s2(n);
+    int upper = 0;
+    if (n > 0) s2[idx[0]] = 0;
+    for (int i = 1; i < n; i++) {
+        if (s[idx[i - 1]] < s[idx[i]]) upper++;
+        s2[idx[i]] = upper;
     }
-    
-    int max_val = std::max(256, n);
-    std::vector<int> count(max_val + 1, 0);
-    
-    for (int k = 1; k < n; k <<= 1) {
-        int p = 0;
-        for (int i = n - k; i < n; i++) sa_tmp[p++] = i;
-        for (int i = 0; i < n; i++) if (sa[i] >= k) sa_tmp[p++] = sa[i] - k;
-        
-        std::fill(count.begin(), count.end(), 0);
-        for (int i = 0; i < n; i++) count[rank[i]]++;
-        for (int i = 1; i <= max_val; i++) count[i] += count[i - 1];
-        for (int i = n - 1; i >= 0; i--) sa[--count[rank[sa_tmp[i]]]] = sa_tmp[i];
-        
-        next_rank[sa[0]] = 0;
-        int r = 0;
-        for (int i = 1; i < n; i++) {
-            int i1 = sa[i], i2 = sa[i - 1];
-            bool same = (rank[i1] == rank[i2] && 
-                         (i1 + k < n ? rank[i1 + k] : -1) == (i2 + k < n ? rank[i2 + k] : -1));
-            next_rank[i1] = same ? r : ++r;
-        }
-        rank = next_rank;
-        if (r == n - 1) break;
-    }
-    return sa;
+    return internal::sa_is(s2, upper);
 }
 
 std::vector<int> suffix_array(const std::string& s) {
     int n = int(s.size());
     std::vector<int> s2(n);
-    for (int i = 0; i < n; i++) s2[i] = (unsigned char)s[i];
-    return suffix_array(s2);
+    for (int i = 0; i < n; i++) {
+        s2[i] = (unsigned char)s[i];
+    }
+    return internal::sa_is(s2, 255);
 }
 
-// Kasai's algorithm による O(N) の LCP Array 構築
 template <class T>
 std::vector<int> lcp_array(const std::vector<T>& s, const std::vector<int>& sa) {
     int n = int(s.size());
@@ -80,6 +174,8 @@ std::vector<int> lcp_array(const std::vector<T>& s, const std::vector<int>& sa) 
 std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
     int n = int(s.size());
     std::vector<int> s2(n);
-    for (int i = 0; i < n; i++) s2[i] = (unsigned char)s[i];
+    for (int i = 0; i < n; i++) {
+        s2[i] = (unsigned char)s[i];
+    }
     return lcp_array(s2, sa);
 }

@@ -13,6 +13,7 @@
 "test/math/crt.test.cpp": "2026-06-23 17:52:32 +0900",
 "test/math/factorial.test.cpp": "2026-06-23 19:46:21 +0900",
 "test/math/floor_sum.test.cpp": "2026-06-23 17:47:58 +0900",
+"test/math/matrix.test.cpp": "2026-06-23 22:05:12 +0900",
 "test/math/modint.test.cpp": "2026-06-23 19:25:46 +0900",
 "test/math/prime.test.cpp": "2026-06-23 21:48:01 +0900",
 "test/string/lcp_array.test.cpp": "2026-06-23 17:31:06 +0900",

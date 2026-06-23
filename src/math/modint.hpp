@@ -59,4 +59,5 @@ struct static_modint {
     }
 };
 
-using mint998244353 = static_modint<998244353>;
+using modint998244353 = static_modint<998244353>;
+using modint1000000007 = static_modint<1000000007>;

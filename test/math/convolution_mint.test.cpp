@@ -9,7 +9,7 @@ using namespace std;
 
 // ご自身の環境の Mod 998244353 用の型名に書き換えてください
 // 例: using mint = modint998244353;
-using mint = mint; 
+using mint = modint998244353; 
 
 int main() {
     cin.tie(nullptr);

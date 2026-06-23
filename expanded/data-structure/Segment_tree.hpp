@@ -1,11 +1,7 @@
-#line 1 "src/data-structure/Segment_tree.hpp"
-
-
+#line 2 "src/data-structure/Segment_tree.hpp"
 
 #include <vector>
 #include <cassert>
-
-namespace Library_Segment_tree {
 
 template <class S, S (*op)(S, S), S (*e)()> 
 struct segtree {
@@ -116,8 +112,3 @@ struct segtree {
 
     void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
 };
-
-} // namespace Library_Segment_tree
-
-
-

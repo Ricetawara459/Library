@@ -1,12 +1,12 @@
-name: Verify and Document
+name: Bundle, Verify and Document
 
 on:
   push:
     branches:
-      - main # または master。お使いの初期ブランチ名に合わせてください
+      - main # お使いの初期ブランチ名に合わせてください
 
 jobs:
-  verify:
+  bundle_and_verify:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,15 +23,35 @@ jobs:
       - name: Install dependencies
         run: |
           pip install online-judge-verify-helper
+          # もし他に必要なインポートツールがあればここに追記
 
+      # ---- 【ステップ1】先にBundle（自動展開）を実行してプッシュ ----
+      - name: Run oj-bundle
+        run: |
+          # 必要に応じて、以前Bundle用Actionsに書いていたスクリプトをここに記述します
+          # 例: 
+          # mkdir -p expanded/data-structure
+          # oj-bundle src/data-structure/lazysegtree.hpp > expanded/data-structure/lazysegtree.hpp
+          
+          # 変更があれば自動でコミット＆プッシュする設定
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Automated bundle"
+            git push origin HEAD:${{ github.ref }}
+          fi
+
+      # ---- 【ステップ2】同じ履歴ベースで安全にVerifyを実行 ----
       - name: Run verification
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           oj-verify run
 
+      # ---- 【ステップ3】最後にドキュメントを生成 ----
       - name: Generate documentation
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          oj-verify docs # 【修正箇所】docs-gh-pages から docs に変更
+          oj-verify docs

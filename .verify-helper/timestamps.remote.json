@@ -14,6 +14,7 @@
 "test/math/factorial.test.cpp": "2026-06-23 19:46:21 +0900",
 "test/math/floor_sum.test.cpp": "2026-06-23 17:47:58 +0900",
 "test/math/modint.test.cpp": "2026-06-23 19:25:46 +0900",
+"test/math/prime.test.cpp": "2026-06-23 21:48:01 +0900",
 "test/string/lcp_array.test.cpp": "2026-06-23 17:31:06 +0900",
 "test/string/rolling_hash.test.cpp": "2026-06-23 21:07:30 +0900",
 "test/string/suffix_array.test.cpp": "2026-06-23 17:31:06 +0900",

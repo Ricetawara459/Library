@@ -21,10 +21,12 @@ jobs:
         with:
           python-stdio: true
 
-      - name: Install online-judge-tools
+      # 1. インストールするパッケージを「online-judge-verify-helper」に変更
+      - name: Install online-judge-verify-helper
         run: |
-          pip install online-judge-tools
+          pip install online-judge-verify-helper
 
+      # 2. コマンド呼び出しを本来の「oj-bundle」に戻す
       - name: Bundle files
         run: |
           mkdir -p expanded
@@ -35,8 +37,8 @@ jobs:
               output_file="expanded/${relative_path}"
               mkdir -p "$(dirname "$output_file")"
               
-              # 【修正箇所】pythonのモジュールとして直接呼び出す
-              python3 -m onlinejudge_command.bundle -I src/ "$file" > "$output_file"
+              # 本来の oj-bundle コマンドで実行
+              oj-bundle -I src/ "$file" > "$output_file"
           done
 
       - name: Commit and Push Changes

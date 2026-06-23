@@ -136,7 +136,8 @@ struct twosat {
             if (id[2 * i] == id[2 * i + 1]) {
                 return false;
             }
-            _answer[i] = id[2 * i] > id[2 * i + 1];
+            // 【修正点】id[偽] < id[真] のときに true と判定する
+            _answer[i] = id[2 * i] < id[2 * i + 1];
         }
         _has_values = true;
         return true;
@@ -151,5 +152,5 @@ struct twosat {
     int _n;
     bool _has_values;
     std::vector<bool> _answer;
-    scc_graph scc; // 変数名衝突を避けるため g から scc に変更
+    scc_graph scc;
 };

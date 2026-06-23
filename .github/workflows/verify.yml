@@ -54,6 +54,7 @@ jobs:
       - name: Run verification
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}  # ★この行を追記
         run: |
           oj-verify run
 

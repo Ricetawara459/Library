@@ -1,10 +1,7 @@
-#ifndef LIBRARY_SEGMENT_TREE_HPP
-#define LIBRARY_SEGMENT_TREE_HPP
+#pragma once
 
 #include <vector>
 #include <cassert>
-
-namespace Library_Segment_tree {
 
 template <class S, S (*op)(S, S), S (*e)()> 
 struct segtree {
@@ -115,8 +112,3 @@ struct segtree {
 
     void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
 };
-
-} // namespace Library_Segment_tree
-
-#endif // LIBRARY_SEGMENT_TREE_HPP
-

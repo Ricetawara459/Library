@@ -64,7 +64,8 @@ int main() {
         } else {
             int l, r;
             cin >> l >> r;
-            cout << seg.prod(l, r).val << "\n";
+            // 【修正】末尾に () を追加して整数値を取得
+            cout << seg.prod(l, r).val.val() << "\n";
         }
     }
 

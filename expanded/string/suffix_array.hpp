@@ -22,6 +22,7 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
     for (int i = n - 2; i >= 0; i--) {
         ls[i] = (s[i] == s[i + 1]) ? ls[i + 1] : (s[i] < s[i + 1]);
     }
+    
     std::vector<int> sum_l(upper + 1), sum_s(upper + 1);
     for (int i = 0; i < n; i++) {
         if (!ls[i]) sum_l[s[i]]++;
@@ -32,29 +33,33 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
         sum_s[i] += sum_l[i];
     }
 
+    // メモリ破損の原因となっていた induce のバケット管理を厳密に修正
     auto induce = [&](const std::vector<int>& lms) {
         std::fill(sa.begin(), sa.end(), -1);
-        std::vector<int> buf = sum_s;
+        std::vector<int> buf(upper + 1);
+        
+        // 1. LMS をバケットの末尾から配置
+        std::copy(sum_s.begin(), sum_s.end(), buf.begin());
         for (auto d : lms) {
             if (d == n) continue;
             sa[--buf[s[d]]] = d;
         }
-        buf = sum_l;
-        if (n > 0) {
-            int d = n - 1;
-            if (!ls[d]) sa[buf[s[d]]++] = d;
-        }
+        
+        // 2. L型 を左からスキャンして誘導
+        std::copy(sum_l.begin(), sum_l.end(), buf.begin());
         for (int i = 0; i < n; i++) {
             int v = sa[i];
             if (v >= 1 && !ls[v - 1]) {
                 sa[buf[s[v - 1]]++] = v - 1;
             }
         }
-        buf = sum_s;
+        
+        // 3. S型 を右からスキャンして誘導 (+1 のオフセットを正確に処理)
+        std::copy(sum_l.begin(), sum_l.end(), buf.begin());
         for (int i = n - 1; i >= 0; i--) {
             int v = sa[i];
             if (v >= 1 && ls[v - 1]) {
-                sa[--buf[s[v - 1]]] = v - 1;
+                sa[--buf[s[v - 1] + 1]] = v - 1;
             }
         }
     };
@@ -95,7 +100,6 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
             } else {
                 while (l < end_l) {
                     if (s[l] != s[r]) {
-                        same = false;
                         break;
                     }
                     l++;

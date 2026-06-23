@@ -3,9 +3,6 @@
 #include <iostream>
 #include <vector>
 #include "../../src/math/convolution.hpp"
-#include "../../src/math/modint.hpp"
-
-using mint=mint998244353;
 
 using namespace std;
 
@@ -16,7 +13,7 @@ int main() {
     int n, m;
     if (!(cin >> n >> m)) return 0;
 
-    vector<mint> a(n), b(m);
+    vector<long long> a(n), b(m);
     for (int i = 0; i < n; i++) cin >> a[i];
     for (int i = 0; i < m; i++) cin >> b[i];
 

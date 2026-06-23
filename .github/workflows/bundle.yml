@@ -35,8 +35,8 @@ jobs:
               output_file="expanded/${relative_path}"
               mkdir -p "$(dirname "$output_file")"
               
-              # 依存関係を解決して展開
-              oj-bundle -I src/ "$file" > "$output_file"
+              # 【修正箇所】pythonのモジュールとして直接呼び出す
+              python3 -m onlinejudge_command.bundle -I src/ "$file" > "$output_file"
           done
 
       - name: Commit and Push Changes

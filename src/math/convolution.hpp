@@ -8,7 +8,6 @@ namespace internal {
 
 constexpr long long CHAR_MOD = 998244353;
 
-// 高速冪乗算 (内部用)
 constexpr long long pow_mod_const(long long x, long long n) {
     long long r = 1;
     long long base = x % CHAR_MOD;
@@ -20,12 +19,10 @@ constexpr long long pow_mod_const(long long x, long long n) {
     return r;
 }
 
-// 逆元計算 (内部用)
 constexpr long long inv_mod_const(long long x) {
     return pow_mod_const(x, CHAR_MOD - 2);
 }
 
-// インプレース数論変換 (DIF NTT)
 void butterfly(std::vector<long long>& a) {
     int n = int(a.size());
     int h = 0;
@@ -36,8 +33,9 @@ void butterfly(std::vector<long long>& a) {
     if (first) {
         first = false;
         long long es[30], ies[30];
-        long long e = 911660635; // g^((MOD-1)/2^23)
-        long long ie = 86583718; // e^-1
+        // 【修正】2^23乗根の正しい値に修正
+        long long e = 15311432; 
+        long long ie = 469870224;
         for (int i = 23; i >= 2; i--) {
             es[i - 2] = e;
             ies[i - 2] = ie;
@@ -67,7 +65,6 @@ void butterfly(std::vector<long long>& a) {
     }
 }
 
-// インプレース逆数論変換 (DIT INTT)
 void butterfly_inv(std::vector<long long>& a) {
     int n = int(a.size());
     int h = 0;
@@ -78,8 +75,9 @@ void butterfly_inv(std::vector<long long>& a) {
     if (first) {
         first = false;
         long long es[30], ies[30];
-        long long e = 911660635;
-        long long ie = 86583718;
+        // 【修正】2^23乗根の正しい値に修正
+        long long e = 15311432; 
+        long long ie = 469870224;
         for (int i = 23; i >= 2; i--) {
             es[i - 2] = e;
             ies[i - 2] = ie;
@@ -112,7 +110,6 @@ void butterfly_inv(std::vector<long long>& a) {
 
 } // namespace internal
 
-// 畳み込み関数本体
 std::vector<long long> convolution(std::vector<long long> a, std::vector<long long> b) {
     int n = int(a.size()), m = int(b.size());
     if (n == 0 || m == 0) return {};

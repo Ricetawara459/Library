@@ -34,4 +34,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          oj-verify docs-gh-pages
+          oj-verify docs # 【修正箇所】docs-gh-pages から docs に変更

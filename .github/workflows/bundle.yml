@@ -1,0 +1,54 @@
+name: Bundle Libraries
+
+on:
+  push:
+    branches:
+      - main # または master。お使いの初期ブランチ名に合わせてください
+    paths:
+      - 'src/**' # srcフォルダ内の変更時のみ実行
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-stdio: true
+
+      - name: Install online-judge-tools
+        run: |
+          pip install online-judge-tools
+
+      - name: Bundle files
+        run: |
+          mkdir -p expanded
+          # src配下のすべての.hppファイルを走査して個別展開
+          find src -type f -name "*.hpp" | while read -r file; do
+              # フォルダ構造を維持した出力先パスを決定
+              relative_path="${file#src/}"
+              output_file="expanded/${relative_path}"
+              mkdir -p "$(dirname "$output_file")"
+              
+              # 依存関係を解決して展開
+              oj-bundle -I src/ "$file" > "$output_file"
+          done
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          git add expanded/
+          # 変更がある場合のみコミットしてプッシュ
+          if ! git diff --cached --quiet; then
+            git commit -m "Automated bundle generation"
+            git push origin HEAD:${{ github.ref }}
+          else
+            echo "No changes to commit"
+          fi

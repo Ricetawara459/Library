@@ -17,7 +17,7 @@ struct static_modint {
     // ★ ACL互換のゲッター関数を追加
     int val() const { return static_cast<int>(_v); }
     
-    static int mod() { return MOD; }
+    static constexpr int mod() { return MOD; }
     mint pow(long long n) const {
         mint res(1), mul(_v);
         while (n > 0) {

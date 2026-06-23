@@ -6,25 +6,26 @@
 
 namespace internal {
 
-constexpr long long CHAR_MOD = 998244353;
-
-// --- long long 用の既存互換ロジック ---
-constexpr long long pow_mod_const(long long x, long long n) {
+// 汎用冪乗算
+constexpr long long pow_mod_general(long long x, long long n, long long m) {
     long long r = 1;
-    long long base = x % CHAR_MOD;
+    long long base = x % m;
     while (n > 0) {
-        if (n & 1) r = (r * base) % CHAR_MOD;
-        base = (base * base) % CHAR_MOD;
+        if (n & 1) r = (long long)((__int128)r * base % m);
+        base = (long long)((__int128)base * base % m);
         n >>= 1;
     }
     return r;
 }
 
-constexpr long long inv_mod_const(long long x) {
-    return pow_mod_const(x, CHAR_MOD - 2);
+// 汎用逆元計算
+constexpr long long inv_mod_general(long long x, long long m) {
+    return pow_mod_general(x, m - 2, m);
 }
 
-void butterfly_ll(std::vector<long long>& a) {
+// 任意のMOD, 原始根Gに対応するインプレース数論変換 (DIF NTT)
+template <long long MOD, long long G>
+void butterfly_ext(std::vector<long long>& a) {
     int n = int(a.size());
     int h = 0;
     while ((1 << h) < n) h++;
@@ -34,18 +35,19 @@ void butterfly_ll(std::vector<long long>& a) {
     if (first) {
         first = false;
         long long es[30], ies[30];
-        long long e = 15311432; 
-        long long ie = 469870224;
-        for (int i = 23; i >= 2; i--) {
+        int cnt = 23; 
+        long long e = pow_mod_general(G, (MOD - 1) >> cnt, MOD);
+        long long ie = inv_mod_general(e, MOD);
+        for (int i = cnt; i >= 2; i--) {
             es[i - 2] = e;
             ies[i - 2] = ie;
-            e = (e * e) % CHAR_MOD;
-            ie = (ie * ie) % CHAR_MOD;
+            e = (long long)((__int128)e * e % MOD);
+            ie = (long long)((__int128)ie * ie % MOD);
         }
         long long now = 1;
-        for (int i = 0; i <= 21; i++) {
-            sum_e[i] = (es[i] * now) % CHAR_MOD;
-            now = (now * ies[i]) % CHAR_MOD;
+        for (int i = 0; i <= cnt - 2; i++) {
+            sum_e[i] = (long long)((__int128)es[i] * now % MOD);
+            now = (long long)((__int128)now * ies[i] % MOD);
         }
     }
     
@@ -56,16 +58,18 @@ void butterfly_ll(std::vector<long long>& a) {
             int offset = s << (h - ph + 1);
             for (int i = 0; i < p; i++) {
                 auto l = a[i + offset];
-                auto r = (a[i + offset + p] * now) % CHAR_MOD;
-                a[i + offset] = (l + r >= CHAR_MOD ? l + r - CHAR_MOD : l + r);
-                a[i + offset + p] = (l - r < 0 ? l - r + CHAR_MOD : l - r);
+                auto r = (long long)((__int128)a[i + offset + p] * now % MOD);
+                a[i + offset] = (l + r >= MOD ? l + r - MOD : l + r);
+                a[i + offset + p] = (l - r < 0 ? l - r + MOD : l - r);
             }
-            now = (now * sum_e[__builtin_ctz(~(unsigned int)(s))]) % CHAR_MOD;
+            now = (long long)((__int128)now * sum_e[__builtin_ctz(~(unsigned int)(s))] % MOD);
         }
     }
 }
 
-void butterfly_inv_ll(std::vector<long long>& a) {
+// 任意のMOD, 原始根Gに対応するインプレース逆数論変換 (DIT INTT)
+template <long long MOD, long long G>
+void butterfly_inv_ext(std::vector<long long>& a) {
     int n = int(a.size());
     int h = 0;
     while ((1 << h) < n) h++;
@@ -75,18 +79,19 @@ void butterfly_inv_ll(std::vector<long long>& a) {
     if (first) {
         first = false;
         long long es[30], ies[30];
-        long long e = 15311432; 
-        long long ie = 469870224;
-        for (int i = 23; i >= 2; i--) {
+        int cnt = 23; 
+        long long e = pow_mod_general(G, (MOD - 1) >> cnt, MOD);
+        long long ie = inv_mod_general(e, MOD);
+        for (int i = cnt; i >= 2; i--) {
             es[i - 2] = e;
             ies[i - 2] = ie;
-            e = (e * e) % CHAR_MOD;
-            ie = (ie * ie) % CHAR_MOD;
+            e = (long long)((__int128)e * e % MOD);
+            ie = (long long)((__int128)ie * ie % MOD);
         }
         long long now = 1;
-        for (int i = 0; i <= 21; i++) {
-            sum_ie[i] = (ies[i] * now) % CHAR_MOD;
-            now = (now * es[i]) % CHAR_MOD;
+        for (int i = 0; i <= cnt - 2; i++) {
+            sum_ie[i] = (long long)((__int128)ies[i] * now % MOD);
+            now = (long long)((__int128)now * es[i] % MOD);
         }
     }
     
@@ -98,104 +103,18 @@ void butterfly_inv_ll(std::vector<long long>& a) {
             for (int i = 0; i < p; i++) {
                 auto l = a[i + offset];
                 auto r = a[i + offset + p];
-                a[i + offset] = (l + r >= CHAR_MOD ? l + r - CHAR_MOD : l + r);
-                a[i + offset + p] = (l - r < 0 ? l - r + CHAR_MOD : l - r);
-                a[i + offset + p] = (a[i + offset + p] * now) % CHAR_MOD;
+                a[i + offset] = (l + r >= MOD ? l + r - MOD : l + r);
+                a[i + offset + p] = (l - r < 0 ? l - r + MOD : l - r);
+                a[i + offset + p] = (long long)((__int128)a[i + offset + p] * now % MOD);
             }
-            now = (now * sum_ie[__builtin_ctz(~(unsigned int)(s))]) % CHAR_MOD;
+            now = (long long)((__int128)now * sum_ie[__builtin_ctz(~(unsigned int)(s))] % MOD);
         }
     }
 }
 
-// --- template (mint) 用のインプレースロジック ---
-template <class mint>
-void butterfly(std::vector<mint>& a) {
-    int n = int(a.size());
-    int h = 0;
-    while ((1 << h) < n) h++;
-    
-    static bool first = true;
-    static std::vector<mint> sum_e(30);
-    if (first) {
-        first = false;
-        std::vector<mint> es(30), ies(30);
-        mint e = 15311432; 
-        mint ie = 469870224;
-        for (int i = 23; i >= 2; i--) {
-            es[i - 2] = e;
-            ies[i - 2] = ie;
-            e *= e;
-            ie *= ie;
-        }
-        mint now = 1;
-        for (int i = 0; i <= 21; i++) {
-            sum_e[i] = es[i] * now;
-            now *= ies[i];
-        }
-    }
-    
-    for (int ph = 1; ph <= h; ph++) {
-        int w = 1 << (ph - 1), p = 1 << (h - ph);
-        mint now = 1;
-        for (int s = 0; s < w; s++) {
-            int offset = s << (h - ph + 1);
-            for (int i = 0; i < p; i++) {
-                auto l = a[i + offset];
-                auto r = a[i + offset + p] * now;
-                a[i + offset] = l + r;
-                a[i + offset + p] = l - r;
-            }
-            now *= sum_e[__builtin_ctz(~(unsigned int)(s))];
-        }
-    }
-}
-
-template <class mint>
-void butterfly_inv(std::vector<mint>& a) {
-    int n = int(a.size());
-    int h = 0;
-    while ((1 << h) < n) h++;
-    
-    static bool first = true;
-    static std::vector<mint> sum_ie(30);
-    if (first) {
-        first = false;
-        std::vector<mint> es(30), ies(30);
-        mint e = 15311432; 
-        mint ie = 469870224;
-        for (int i = 23; i >= 2; i--) {
-            es[i - 2] = e;
-            ies[i - 2] = ie;
-            e *= e;
-            ie *= ie;
-        }
-        mint now = 1;
-        for (int i = 0; i <= 21; i++) {
-            sum_ie[i] = ies[i] * now;
-            now *= es[i];
-        }
-    }
-    
-    for (int ph = h; ph >= 1; ph--) {
-        int w = 1 << (ph - 1), p = 1 << (h - ph);
-        mint now = 1;
-        for (int s = 0; s < w; s++) {
-            int offset = s << (h - ph + 1);
-            for (int i = 0; i < p; i++) {
-                auto l = a[i + offset];
-                auto r = a[i + offset + p];
-                a[i + offset] = l + r;
-                a[i + offset + p] = (l - r) * now;
-            }
-            now *= sum_ie[__builtin_ctz(~(unsigned int)(s))];
-        }
-    }
-}
-
-} // namespace internal
-
-// 1. 既存の long long 版 (互換性維持)
-std::vector<long long> convolution(std::vector<long long> a, std::vector<long long> b) {
+// 任意MOD用内部畳み込み関数
+template <long long MOD, long long G>
+std::vector<long long> convolution_ext(std::vector<long long> a, std::vector<long long> b) {
     int n = int(a.size()), m = int(b.size());
     if (n == 0 || m == 0) return {};
     int z = 1;
@@ -204,44 +123,111 @@ std::vector<long long> convolution(std::vector<long long> a, std::vector<long lo
     a.resize(z, 0);
     b.resize(z, 0);
     
-    internal::butterfly_ll(a);
-    internal::butterfly_ll(b);
+    butterfly_ext<MOD, G>(a);
+    butterfly_ext<MOD, G>(b);
     for (int i = 0; i < z; i++) {
-        a[i] = (a[i] * b[i]) % internal::CHAR_MOD;
+        a[i] = (long long)((__int128)a[i] * b[i] % MOD);
     }
-    internal::butterfly_inv_ll(a);
+    butterfly_inv_ext<MOD, G>(a);
     
     a.resize(n + m - 1);
-    long long iz = internal::inv_mod_const(z);
+    long long iz = inv_mod_general(z, MOD);
     for (int i = 0; i < n + m - 1; i++) {
-        a[i] = (a[i] * iz) % internal::CHAR_MOD;
+        a[i] = (long long)((__int128)a[i] * iz % MOD);
     }
     return a;
 }
 
-// 2. 新設の template (mint) 版
+} // namespace internal
+
+// 1. 任意の static_modint<MOD> と明示的に連携する畳み込み (Garner)
 template <class mint>
-std::vector<mint> convolution(std::vector<mint> a, std::vector<mint> b) {
+std::vector<mint> any_mod_convolution(const std::vector<mint>& a, const std::vector<mint>& b) {
     int n = int(a.size()), m = int(b.size());
     if (n == 0 || m == 0) return {};
     
-    int z = 1;
-    while (z < n + m - 1) z <<= 1;
+    std::vector<long long> a_ll(n), b_ll(m);
+    for (int i = 0; i < n; i++) a_ll[i] = a[i].val();
+    for (int i = 0; i < m; i++) b_ll[i] = b[i].val();
     
-    a.resize(z, mint(0));
-    b.resize(z, mint(0));
+    constexpr long long m1 = 998244353;
+    constexpr long long m2 = 754974721;
+    constexpr long long m3 = 469762049;
     
-    internal::butterfly(a);
-    internal::butterfly(b);
-    for (int i = 0; i < z; i++) {
-        a[i] *= b[i];
+    auto c1 = internal::convolution_ext<m1, 3>(a_ll, b_ll);
+    auto c2 = internal::convolution_ext<m2, 11>(a_ll, b_ll);
+    auto c3 = internal::convolution_ext<m3, 3>(a_ll, b_ll);
+    
+    int sz = n + m - 1;
+    std::vector<mint> res(sz);
+    
+    constexpr long long m1_inv_m2 = internal::inv_mod_general(m1, m2);
+    constexpr long long m1_inv_m3 = internal::inv_mod_general(m1, m3);
+    constexpr long long m2_inv_m3 = internal::inv_mod_general(m2, m3);
+    
+    mint mint_m1 = mint(m1);
+    mint mint_m1m2 = mint_m1 * mint(m2);
+    
+    for (int i = 0; i < sz; i++) {
+        long long v1 = c1[i];
+        long long v2 = (long long)((__int128)(c2[i] - v1 + m2) * m1_inv_m2 % m2);
+        long long v3 = (long long)((__int128)((c3[i] - v1 + m3) * m1_inv_m3 % m3 - v2 + m3) * m2_inv_m3 % m3);
+        
+        res[i] = mint(v1) + mint(v2) * mint_m1 + mint(v3) * mint_m1m2;
     }
-    internal::butterfly_inv(a);
-    
-    a.resize(n + m - 1);
-    mint iz = mint(z).inv();
-    for (int i = 0; i < n + m - 1; i++) {
-        a[i] *= iz;
+    return res;
+}
+
+// 2. 標準の mint 版 (★ if constexpr により MOD に応じて自動で最適な処理に分岐)
+template <class mint>
+std::vector<mint> convolution(const std::vector<mint>& a, const std::vector<mint>& b) {
+    if constexpr (mint::mod() == 998244353) {
+        int n = int(a.size()), m = int(b.size());
+        if (n == 0 || m == 0) return {};
+        std::vector<long long> a_ll(n), b_ll(m);
+        for (int i = 0; i < n; i++) a_ll[i] = a[i].val();
+        for (int i = 0; i < m; i++) b_ll[i] = b[i].val();
+        auto c_ll = internal::convolution_ext<998244353, 3>(a_ll, b_ll);
+        std::vector<mint> res(n + m - 1);
+        for (int i = 0; i < n + m - 1; i++) res[i] = mint(c_ll[i]);
+        return res;
+    } else {
+        // MOD が 998244353 以外なら自動で Garner へフォールバック
+        return any_mod_convolution<mint>(a, b);
     }
-    return a;
+}
+
+// 3. 標準の long long 版 (Mod 998244353 固定)
+std::vector<long long> convolution(const std::vector<long long>& a, const std::vector<long long>& b) {
+    return internal::convolution_ext<998244353, 3>(a, b);
+}
+
+// 4. 拡張：long long の範囲で正確に計算する畳み込み
+std::vector<long long> convolution_ll(const std::vector<long long>& a, const std::vector<long long>& b) {
+    int n = int(a.size()), m = int(b.size());
+    if (n == 0 || m == 0) return {};
+    
+    constexpr long long m1 = 998244353;
+    constexpr long long m2 = 754974721;
+    constexpr long long m3 = 469762049;
+    
+    auto c1 = internal::convolution_ext<m1, 3>(a, b);
+    auto c2 = internal::convolution_ext<m2, 11>(a, b);
+    auto c3 = internal::convolution_ext<m3, 3>(a, b);
+    
+    int sz = n + m - 1;
+    std::vector<long long> res(sz);
+    
+    constexpr long long m1_inv_m2 = internal::inv_mod_general(m1, m2);
+    constexpr long long m1_inv_m3 = internal::inv_mod_general(m1, m3);
+    constexpr long long m2_inv_m3 = internal::inv_mod_general(m2, m3);
+    
+    for (int i = 0; i < sz; i++) {
+        long long v1 = c1[i];
+        long long v2 = (long long)((__int128)(c2[i] - v1 + m2) * m1_inv_m2 % m2);
+        long long v3 = (long long)((__int128)((c3[i] - v1 + m3) * m1_inv_m3 % m3 - v2 + m3) * m2_inv_m3 % m3);
+        
+        res[i] = (long long)((__int128)v1 + (__int128)v2 * m1 + (__int128)v3 * m1 * m2);
+    }
+    return res;
 }

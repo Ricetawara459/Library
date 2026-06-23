@@ -28,16 +28,24 @@ jobs:
       # ---- 【ステップ1】先にBundle（自動展開）を実行してプッシュ ----
       - name: Run oj-bundle
         run: |
-          # 必要に応じて、以前Bundle用Actionsに書いていたスクリプトをここに記述します
-          # 例: 
-          # mkdir -p expanded/data-structure
-          # oj-bundle src/data-structure/lazysegtree.hpp > expanded/data-structure/lazysegtree.hpp
-          
-          # 変更があれば自動でコミット＆プッシュする設定
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ -n "$(git status --porcelain)" ]; then
-            git add .
+
+          # src 以下のすべての .hpp ファイルをループで処理
+          find src -name "*.hpp" | while read -r file; do
+              # 出力先パスの決定 (例: src/string/suffix_array.hpp -> expanded/string/suffix_array.hpp)
+              out="expanded/${file#src/}"
+              
+              # 出力先ディレクトリを作成
+              mkdir -p "$(dirname "$out")"
+              
+              # oj-bundle を実行して展開
+              oj-bundle "$file" > "$out"
+          done
+          
+          # 変更（新しく展開されたファイルなど）があればコミット＆プッシュ
+          if [ -n "$(git status --porcelain expanded)" ]; then
+            git add expanded/
             git commit -m "Automated bundle"
             git push origin HEAD:${{ github.ref }}
           fi

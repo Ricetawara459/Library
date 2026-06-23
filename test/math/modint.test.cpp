@@ -5,6 +5,7 @@
 #include "../../src/math/modint.hpp"
 
 using namespace std;
+using mint = modint998244353;
 
 int main() {
     cin.tie(nullptr);
@@ -13,8 +14,8 @@ int main() {
     int n, m, k;
     if (!(cin >> n >> m >> k)) return 0;
 
-    vector<vector<mint998244353>> a(n, vector<mint998244353>(m));
-    vector<vector<mint998244353>> b(m, vector<mint998244353>(k));
+    vector<vector<mint>> a(n, vector<mint>(m));
+    vector<vector<mint>> b(m, vector<mint>(k));
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) cin >> a[i][j];
@@ -23,7 +24,7 @@ int main() {
         for (int j = 0; j < k; j++) cin >> b[i][j];
     }
 
-    vector<vector<mint998244353>> c(n, vector<mint998244353>(k, 0));
+    vector<vector<mint>> c(n, vector<mint>(k, 0));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             for (int h = 0; h < k; h++) {

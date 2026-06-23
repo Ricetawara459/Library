@@ -5,16 +5,21 @@
 template <int MOD>
 struct static_modint {
     using mint = static_modint;
+  private:
+    long long _v; // 変数名を _v に変更し、private に隠蔽
   public:
-    long long val;
-    static_modint() : val(0) {}
+    static_modint() : _v(0) {}
     static_modint(long long v) {
-        val = v % MOD;
-        if (val < 0) val += MOD;
+        _v = v % MOD;
+        if (_v < 0) _v += MOD;
     }
+    
+    // ★ ACL互換のゲッター関数を追加
+    int val() const { return static_cast<int>(_v); }
+    
     static int mod() { return MOD; }
     mint pow(long long n) const {
-        mint res(1), mul(val);
+        mint res(1), mul(_v);
         while (n > 0) {
             if (n & 1) res *= mul;
             mul *= mul;
@@ -26,17 +31,17 @@ struct static_modint {
         return pow(MOD - 2);
     }
     mint& operator+=(const mint& a) {
-        val += a.val;
-        if (val >= MOD) val -= MOD;
+        _v += a._v;
+        if (_v >= MOD) _v -= MOD;
         return *this;
     }
     mint& operator-=(const mint& a) {
-        val -= a.val;
-        if (val < 0) val += MOD;
+        _v -= a._v;
+        if (_v < 0) _v += MOD;
         return *this;
     }
     mint& operator*=(const mint& a) {
-        val = (val * a.val) % MOD;
+        _v = (_v * a._v) % MOD;
         return *this;
     }
     mint& operator/=(const mint& a) {
@@ -48,9 +53,9 @@ struct static_modint {
     friend mint operator-(const mint& a, const mint& b) { return mint(a) -= b; }
     friend mint operator*(const mint& a, const mint& b) { return mint(a) *= b; }
     friend mint operator/(const mint& a, const mint& b) { return mint(a) /= b; }
-    friend bool operator==(const mint& a, const mint& b) { return a.val == b.val; }
-    friend bool operator!=(const mint& a, const mint& b) { return a.val != b.val; }
-    friend std::ostream& operator<<(std::ostream& os, const mint& a) { return os << a.val; }
+    friend bool operator==(const mint& a, const mint& b) { return a._v == b._v; }
+    friend bool operator!=(const mint& a, const mint& b) { return a._v != b._v; }
+    friend std::ostream& operator<<(std::ostream& os, const mint& a) { return os << a._v; }
     friend std::istream& operator>>(std::istream& is, mint& a) {
         long long v;
         is >> v;

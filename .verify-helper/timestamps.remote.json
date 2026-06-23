@@ -3,6 +3,7 @@
 "test/data-structure/fenwick_tree.test.cpp": "2026-06-23 12:26:13 +0900",
 "test/data-structure/lazysegtree.test.cpp": "2026-06-23 12:59:08 +0900",
 "test/data-structure/segtree.test.cpp": "2026-06-23 12:55:54 +0900",
+"test/math/crt.test.cpp": "2026-06-23 17:52:32 +0900",
 "test/math/floor_sum.test.cpp": "2026-06-23 17:47:58 +0900",
 "test/math/modint.test.cpp": "2026-06-23 12:13:20 +0900",
 "test/string/lcp_array.test.cpp": "2026-06-23 17:31:06 +0900",

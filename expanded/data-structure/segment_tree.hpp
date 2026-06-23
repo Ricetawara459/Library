@@ -43,7 +43,7 @@ struct segtree {
 
         while (l < r) {
             if (l & 1) sml = op(sml, d[l++]);
-            if (r & 1) smr = op(d[r--], smr);
+            if (r & 1) smr = op(d[--r], smr);
             l >>= 1;
             r >>= 1;
         }

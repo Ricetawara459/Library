@@ -112,23 +112,23 @@ struct scc_graph {
 struct twosat {
   public:
     twosat() : _n(0), _has_values(false) {}
-    explicit twosat(int n) : _n(n), _has_values(false), _answer(n), g(2 * n) {}
+    explicit twosat(int n) : _n(n), _has_values(false), _answer(n), scc(2 * n) {}
 
     // (x_i == f) v (x_j == g) というクローズを追加する
     void add_clause(int i, bool f, int j, bool g) {
         assert(0 <= i && i < _n);
         assert(0 <= j && j < _n);
-        // ¬x_i => x_j  (f が偽なら真、真なら偽に変換して命題の辺を張る)
-        g.add_edge(2 * i + (f ? 0 : 1), 2 * j + (g ? 1 : 0));
+        // ¬x_i => x_j
+        scc.add_edge(2 * i + (f ? 0 : 1), 2 * j + (g ? 1 : 0));
         // ¬x_j => x_i
-        g.add_edge(2 * j + (g ? 0 : 1), 2 * i + (f ? 1 : 0));
+        scc.add_edge(2 * j + (g ? 0 : 1), 2 * i + (f ? 1 : 0));
     }
 
     bool satisfiable() {
-        auto scc = g.scc();
+        auto scc_res = scc.scc();
         std::vector<int> id(2 * _n);
-        for (int i = 0; i < int(scc.size()); i++) {
-            for (int v : scc[i]) {
+        for (int i = 0; i < int(scc_res.size()); i++) {
+            for (int v : scc_res[i]) {
                 id[v] = i;
             }
         }
@@ -151,5 +151,5 @@ struct twosat {
     int _n;
     bool _has_values;
     std::vector<bool> _answer;
-    scc_graph g;
+    scc_graph scc; // 変数名衝突を避けるため g から scc に変更
 };

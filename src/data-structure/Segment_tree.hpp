@@ -119,3 +119,4 @@ struct segtree {
 } // namespace Library_Segment_tree
 
 #endif // LIBRARY_SEGMENT_TREE_HPP
+

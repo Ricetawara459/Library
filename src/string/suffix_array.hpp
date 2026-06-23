@@ -1,20 +1,71 @@
 #pragma once
 
-#include <vector>
-#include <string>
 #include <algorithm>
-#include <numeric>
 #include <cassert>
+#include <numeric>
+#include <string>
+#include <vector>
 
 namespace internal {
 
+std::vector<int> sa_naive(const std::vector<int>& s) {
+    int n = int(s.size());
+    std::vector<int> sa(n);
+    std::iota(sa.begin(), sa.end(), 0);
+    std::sort(sa.begin(), sa.end(), [&](int l, int r) {
+        if (l == r) return false;
+        while (l < n && r < n) {
+            if (s[l] != s[r]) return s[l] < s[r];
+            l++;
+            r++;
+        }
+        return l == n;
+    });
+    return sa;
+}
+
+std::vector<int> sa_doubling(const std::vector<int>& s) {
+    int n = int(s.size());
+    std::vector<int> sa(n), rnk = s, tmp(n);
+    std::iota(sa.begin(), sa.end(), 0);
+    for (int k = 1; k < n; k *= 2) {
+        auto cmp = [&](int x, int y) {
+            if (rnk[x] != rnk[y]) return rnk[x] < rnk[y];
+            int rx = x + k < n ? rnk[x + k] : -1;
+            int ry = y + k < n ? rnk[y + k] : -1;
+            return rx < ry;
+        };
+        std::sort(sa.begin(), sa.end(), cmp);
+        tmp[sa[0]] = 0;
+        for (int i = 1; i < n; i++) {
+            tmp[sa[i]] = tmp[sa[i - 1]] + (cmp(sa[i - 1], sa[i]) ? 1 : 0);
+        }
+        std::swap(tmp, rnk);
+    }
+    return sa;
+}
+
+// SA-IS, linear-time suffix array construction
+// Reference:
+// G. Nong, S. Zhang, and W. H. Chan,
+// Two Efficient Algorithms for Linear Time Suffix Array Construction
+template <int THRESHOLD_NAIVE = 10, int THRESHOLD_DOUBLING = 40>
 std::vector<int> sa_is(const std::vector<int>& s, int upper) {
     int n = int(s.size());
     if (n == 0) return {};
     if (n == 1) return {0};
     if (n == 2) {
-        if (s[0] < s[1]) return {0, 1};
-        return {1, 0};
+        if (s[0] < s[1]) {
+            return {0, 1};
+        } else {
+            return {1, 0};
+        }
+    }
+    if (n < THRESHOLD_NAIVE) {
+        return sa_naive(s);
+    }
+    if (n < THRESHOLD_DOUBLING) {
+        return sa_doubling(s);
     }
 
     std::vector<int> sa(n);
@@ -22,39 +73,35 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
     for (int i = n - 2; i >= 0; i--) {
         ls[i] = (s[i] == s[i + 1]) ? ls[i + 1] : (s[i] < s[i + 1]);
     }
-    
     std::vector<int> sum_l(upper + 1), sum_s(upper + 1);
     for (int i = 0; i < n; i++) {
-        if (!ls[i]) sum_l[s[i]]++;
-        else sum_s[s[i]]++;
+        if (!ls[i]) {
+            sum_s[s[i]]++;
+        } else {
+            sum_l[s[i] + 1]++;
+        }
     }
     for (int i = 0; i <= upper; i++) {
-        if (i > 0) sum_l[i] += sum_s[i - 1];
         sum_s[i] += sum_l[i];
+        if (i < upper) sum_l[i + 1] += sum_s[i];
     }
 
-    // メモリ破損の原因となっていた induce のバケット管理を厳密に修正
     auto induce = [&](const std::vector<int>& lms) {
         std::fill(sa.begin(), sa.end(), -1);
         std::vector<int> buf(upper + 1);
-        
-        // 1. LMS をバケットの末尾から配置
         std::copy(sum_s.begin(), sum_s.end(), buf.begin());
         for (auto d : lms) {
             if (d == n) continue;
-            sa[--buf[s[d]]] = d;
+            sa[buf[s[d]]++] = d;
         }
-        
-        // 2. L型 を左からスキャンして誘導
         std::copy(sum_l.begin(), sum_l.end(), buf.begin());
+        sa[buf[s[n - 1]]++] = n - 1;
         for (int i = 0; i < n; i++) {
             int v = sa[i];
             if (v >= 1 && !ls[v - 1]) {
                 sa[buf[s[v - 1]]++] = v - 1;
             }
         }
-        
-        // 3. S型 を右からスキャンして誘導 (+1 のオフセットを正確に処理)
         std::copy(sum_l.begin(), sum_l.end(), buf.begin());
         for (int i = n - 1; i >= 0; i--) {
             int v = sa[i];
@@ -81,7 +128,7 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
 
     induce(lms);
 
-    if (m > 0) {
+    if (m) {
         std::vector<int> sorted_lms;
         sorted_lms.reserve(m);
         for (int v : sa) {
@@ -110,7 +157,10 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
             if (!same) rec_upper++;
             rec_s[lms_map[sorted_lms[i]]] = rec_upper;
         }
-        auto rec_sa = sa_is(rec_s, rec_upper);
+
+        auto rec_sa =
+            sa_is<THRESHOLD_NAIVE, THRESHOLD_DOUBLING>(rec_s, rec_upper);
+
         for (int i = 0; i < m; i++) {
             sorted_lms[i] = lms[rec_sa[i]];
         }
@@ -119,46 +169,49 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
     return sa;
 }
 
-} // namespace internal
+}  // namespace internal
 
-template <class T>
-std::vector<int> suffix_array(const std::vector<T>& s, int upper) {
+std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
     assert(0 <= upper);
     for (int d : s) {
         assert(0 <= d && d <= upper);
     }
-    return internal::sa_is(s, upper);
+    auto sa = internal::sa_is(s, upper);
+    return sa;
 }
 
-template <class T>
-std::vector<int> suffix_array(const std::vector<T>& s) {
+template <class T> std::vector<int> suffix_array(const std::vector<T>& s) {
     int n = int(s.size());
     std::vector<int> idx(n);
-    std::iota(idx.begin(), idx.end(), 0);
-    std::sort(idx.begin(), idx.end(), [&](int l, int r) { return s[l] < s[r]; });
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&](int l, int r) { return s[l] < s[r]; });
     std::vector<int> s2(n);
-    int upper = 0;
-    if (n > 0) s2[idx[0]] = 0;
-    for (int i = 1; i < n; i++) {
-        if (s[idx[i - 1]] < s[idx[i]]) upper++;
-        s2[idx[i]] = upper;
+    int now = 0;
+    for (int i = 0; i < n; i++) {
+        if (i && s[idx[i - 1]] != s[idx[i]]) now++;
+        s2[idx[i]] = now;
     }
-    return internal::sa_is(s2, upper);
+    return internal::sa_is(s2, now);
 }
 
 std::vector<int> suffix_array(const std::string& s) {
     int n = int(s.size());
     std::vector<int> s2(n);
     for (int i = 0; i < n; i++) {
-        s2[i] = (unsigned char)s[i];
+        s2[i] = s[i];
     }
     return internal::sa_is(s2, 255);
 }
 
+// Reference:
+// T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,
+// Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its
+// Applications
 template <class T>
-std::vector<int> lcp_array(const std::vector<T>& s, const std::vector<int>& sa) {
+std::vector<int> lcp_array(const std::vector<T>& s,
+                           const std::vector<int>& sa) {
     int n = int(s.size());
-    if (n <= 1) return {};
+    assert(n >= 1);
     std::vector<int> rnk(n);
     for (int i = 0; i < n; i++) {
         rnk[sa[i]] = i;
@@ -166,10 +219,12 @@ std::vector<int> lcp_array(const std::vector<T>& s, const std::vector<int>& sa) 
     std::vector<int> lcp(n - 1);
     int h = 0;
     for (int i = 0; i < n; i++) {
+        if (h > 0) h--;
         if (rnk[i] == 0) continue;
         int j = sa[rnk[i] - 1];
-        if (h > 0) h--;
-        while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;
+        for (; j + h < n && i + h < n; h++) {
+            if (s[j + h] != s[i + h]) break;
+        }
         lcp[rnk[i] - 1] = h;
     }
     return lcp;
@@ -179,7 +234,7 @@ std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
     int n = int(s.size());
     std::vector<int> s2(n);
     for (int i = 0; i < n; i++) {
-        s2[i] = (unsigned char)s[i];
+        s2[i] = s[i];
     }
     return lcp_array(s2, sa);
 }

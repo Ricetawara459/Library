@@ -1,4 +1,4 @@
-#define PROBLEM "https://judge.yosupo.jp/problem/chinese_remainder_theorem"
+#define PROBLEM "https://yukicoder.me/problems/no/186"
 
 #include <iostream>
 #include <vector>
@@ -6,23 +6,28 @@
 
 using namespace std;
 
-void solve() {
-    long long r1, m1, r2, m2;
-    cin >> r1 >> m1 >> r2 >> m2;
-    auto ans = crt({r1, r2}, {m1, m2});
-    if (ans.second == 0) {
-        cout << -1 << "\n";
-    } else {
-        cout << ans.first << " " << ans.second << "\n";
-    }
-}
-
 int main() {
     cin.tie(nullptr);
     ios::sync_with_stdio(false);
-    int t;
-    if (cin >> t) {
-        while (t--) solve();
+
+    vector<long long> x(3), y(3);
+    for (int i = 0; i < 3; i++) {
+        cin >> x[i] >> y[i];
     }
+
+    auto ans = crt(x, y);
+
+    if (ans.second == 0) {
+        // 解が存在しない場合
+        cout << -1 << "\n";
+    } else {
+        long long res = ans.first;
+        // 問題文の要求が「最小の正整数」なので、最小の非負整数が 0 の場合は、周期（LCM）を足して正にする
+        if (res == 0) {
+            res = ans.second;
+        }
+        cout << res << "\n";
+    }
+
     return 0;
 }

@@ -1,0 +1,37 @@
+name: Verify and Document
+
+on:
+  push:
+    branches:
+      - main # または master。お使いの初期ブランチ名に合わせてください
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-stdio: true
+
+      - name: Install dependencies
+        run: |
+          pip install online-judge-verify-helper
+
+      - name: Run verification
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          oj-verify run
+
+      - name: Generate documentation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          oj-verify docs-gh-pages

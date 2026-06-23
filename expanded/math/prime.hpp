@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <chrono>
+#include <random>
 
 namespace internal {
 
@@ -52,34 +54,49 @@ constexpr bool miller_rabin(unsigned long long n) {
     return true;
 }
 
+// 修正版 Pollard's rho アルゴリズム
 long long pollard_rho(long long n) {
     if (n % 2 == 0) return 2;
     if (miller_rabin(n)) return n;
     
-    long long step = 0;
-    auto f = [&](long long x) {
-        return (long long)((unsigned __int128)x * x % n + step) % n;
-    };
-
+    // 撃墜ケースを回避するために実行時乱数を使用
+    static std::mt19937_64 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+    
     while (true) {
-        step++;
-        long long x = 2, y = 2, d = 1;
-        long long prd = 1;
-        int i = 0;
-        while (d == 1) {
+        long long step = rng() % (n - 1) + 1;
+        auto f = [&](long long x) {
+            return (long long)((unsigned __int128)x * x % n + step) % n;
+        };
+
+        long long x = 0, y = 0, prd = 1;
+        long long d = 1;
+        
+        // 128ステップごとに一括して gcd を取る（ボトルネック軽減）
+        for (int i = 1; ; i++) {
             x = f(x);
             y = f(f(y));
             long long diff = std::abs(x - y);
             if (diff == 0) break;
-            prd = (long long)((unsigned __int128)prd * diff % n);
-            if (prd == 0) break;
-            i++;
-            if (i == 127) {
+            
+            long long next_prd = (long long)((unsigned __int128)prd * diff % n);
+            if (next_prd == 0) {
+                // prd * diff が n の倍数になった場合、
+                // 潰れる前の prd または diff から非自明な因数を回収する
                 d = std::gcd(prd, n);
-                if (d > 1) return d;
-                i = 0;
+                if (d > 1 && d < n) return d;
+                d = std::gcd(diff, n);
+                if (d > 1 && d < n) return d;
+                break;
+            }
+            prd = next_prd;
+            
+            if (i % 128 == 0) {
+                d = std::gcd(prd, n);
+                if (d > 1 && d < n) return d;
+                prd = 1;
             }
         }
+        
         d = std::gcd(prd, n);
         if (d > 1 && d < n) return d;
     }
@@ -107,6 +124,16 @@ constexpr bool is_prime(long long n) {
 
 std::vector<long long> factorize(long long n) {
     std::vector<long long> res;
+    if (n <= 1) return res;
+    
+    // 小さな素数で予め割っておくことで、ポラード・ローの呼び出し回数を劇的に減らす
+    for (long long p : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47}) {
+        while (n % p == 0) {
+            res.push_back(p);
+            n /= p;
+        }
+    }
+    
     internal::factorize_inner(n, res);
     std::sort(res.begin(), res.end());
     return res;
@@ -147,7 +174,6 @@ struct sieve {
   public:
     sieve() = default;
 
-    // 必要に応じてサイズを倍々に拡張する
     void extend(int n) {
         if (n <= _max_n) return;
         int next_n = _max_n;
@@ -161,7 +187,6 @@ struct sieve {
             _min_factor[i] = i;
         }
 
-        // 既存の素数および新規素数で拡張区間を塗りつぶす
         for (int i = 2; i * i <= _max_n; i++) {
             if (_min_factor[i] == i) {
                 int start = ((old_n + i) / i) * i;
@@ -233,14 +258,12 @@ struct sieve {
 
   private:
     int _max_n = 1;
-    std::vector<int> _min_factor = {0, 1}; // private隠蔽
-    std::vector<int> _mobius = {0, 1};     // private隠蔽
+    std::vector<int> _min_factor = {0, 1};
+    std::vector<int> _mobius = {0, 1};
 };
 
-// ヘッダ内で共有されるグローバルなインスタンス
 inline sieve default_sieve;
 
-// インスタンスを意識せず直接呼べるトップレベル関数群（自動拡張付き）
 inline std::vector<int> factorize_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.factorize(n);

@@ -2,6 +2,7 @@
 "test/data-structure/dsu.test.cpp": "2026-06-23 12:23:06 +0900",
 "test/data-structure/fenwick_tree.test.cpp": "2026-06-23 12:26:13 +0900",
 "test/data-structure/lazysegtree.test.cpp": "2026-06-23 19:25:46 +0900",
+"test/data-structure/removable_pq.test.cpp": "2026-06-23 20:16:11 +0900",
 "test/data-structure/segtree.test.cpp": "2026-06-23 19:09:53 +0900",
 "test/graph/maxflow.test.cpp": "2026-06-23 18:32:11 +0900",
 "test/graph/mincostflow.test.cpp": "2026-06-23 18:37:30 +0900",

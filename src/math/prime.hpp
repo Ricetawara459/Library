@@ -8,7 +8,7 @@
 #include <chrono>
 #include <random>
 
-namespace internal {
+namespace prime_internal {
 
 // 巨大な数用の高速な冪乗算
 constexpr unsigned long long pow_mod_u128(unsigned long long x, unsigned long long n, unsigned long long m) {
@@ -113,13 +113,13 @@ void factorize_inner(long long n, std::vector<long long>& res) {
     factorize_inner(n / d, res);
 }
 
-} // namespace internal
+} // namespace prime_internal
 
 
 // ==================== 1. 巨大な数用 (Pollard's rho / Miller-Rabin) ====================
 
 constexpr bool is_prime(long long n) {
-    return internal::miller_rabin(n);
+    return prime_internal::miller_rabin(n);
 }
 
 std::vector<long long> factorize(long long n) {
@@ -134,7 +134,7 @@ std::vector<long long> factorize(long long n) {
         }
     }
     
-    internal::factorize_inner(n, res);
+    prime_internal::factorize_inner(n, res);
     std::sort(res.begin(), res.end());
     return res;
 }

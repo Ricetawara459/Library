@@ -14,6 +14,9 @@ struct Point {
     Real x, y;
     Point operator+(const Point& p) const { return {x + p.x, y + p.y}; }
     Point operator-(const Point& p) const { return {x - p.x, y - p.y}; }
+    friend std::ostream& operator<<(std::ostream& os, const Point& p) {
+        return os << p.x << ' ' << p.y;
+    }
 };
 
 // 内積 (Dot Product)

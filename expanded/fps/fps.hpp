@@ -330,6 +330,13 @@ struct formal_power_series : std::vector<mint> {
     friend fps operator*(const mint& lhs, fps rhs) { return rhs *= lhs; }
     friend fps operator/(fps lhs, const mint& rhs) { return lhs /= rhs; }
 
+    fps mul_pre(const fps& rhs, int deg) const {
+        if (deg <= 0) return {};
+        fps res = *this * rhs;
+        if (int(res.size()) > deg) res.resize(deg);
+        return res;
+    }
+
     fps diff() const {
         int n = int(this->size());
         if (n <= 1) return {};
@@ -356,11 +363,13 @@ struct formal_power_series : std::vector<mint> {
         if (deg == -1) deg = int(this->size());
         fps res{(*this)[0].inv()};
         for (int m = 1; m < deg; m <<= 1) {
-            fps f = pre(2 * m);
-            fps nxt = res * res * f;
-            res *= mint(2);
-            res -= nxt;
-            res.resize(std::min(2 * m, deg));
+            int nxt_deg = std::min(2 * m, deg);
+            fps f = pre(nxt_deg);
+            fps g = f.mul_pre(res, nxt_deg);
+            g.resize(nxt_deg);
+            g[0] = mint(2) - g[0];
+            for (int i = 1; i < nxt_deg; i++) g[i] = -g[i];
+            res = res.mul_pre(g, nxt_deg);
         }
         return res.pre(deg);
     }

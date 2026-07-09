@@ -4,6 +4,7 @@
 "test/data-structure/lazysegtree.test.cpp": "2026-06-23 19:25:46 +0900",
 "test/data-structure/removable_pq.test.cpp": "2026-06-23 20:16:11 +0900",
 "test/data-structure/segtree.test.cpp": "2026-06-23 19:09:53 +0900",
+"test/fps/fps.test.cpp": "2026-07-09 22:05:27 +0900",
 "test/graph/maxflow.test.cpp": "2026-06-23 18:32:11 +0900",
 "test/graph/mincostflow.test.cpp": "2026-06-23 18:37:30 +0900",
 "test/graph/scc.test.cpp": "2026-06-23 18:09:56 +0900",

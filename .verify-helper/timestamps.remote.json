@@ -20,5 +20,6 @@
 "test/string/lcp_array.test.cpp": "2026-06-23 17:31:06 +0900",
 "test/string/rolling_hash.test.cpp": "2026-06-23 21:07:30 +0900",
 "test/string/suffix_array.test.cpp": "2026-06-23 17:31:06 +0900",
-"test/string/z_algorigthm.test.cpp": "2026-06-23 17:08:12 +0900"
+"test/string/z_algorigthm.test.cpp": "2026-06-23 17:08:12 +0900",
+"test/tree/vertex_set_path_composite.test.cpp": "2026-07-09 22:51:44 +0900"
 }

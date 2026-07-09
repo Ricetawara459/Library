@@ -4,11 +4,18 @@
 #include <cassert>
 #include <vector>
 
-// Heavy-Light Decomposition.
-// Vertices are mapped to [0, n) by pos[v].
-// path_query(u, v, edge, f) calls f(l, r) for O(log n) half-open ranges [l, r).
-// If edge == true, the LCA vertex is excluded, so edge values can be stored at pos[child].
+// Heavy-Light Decomposition。
+// 各頂点 v は pos[v] によって [0, n) の位置へ写される。
+// path_query(u, v, edge, f) はパスを O(log n) 個の半開区間 [l, r) に分けて f(l, r) を呼ぶ。
+// edge == true のときは LCA の頂点を除外するので、辺の値を pos[child] に置いて扱える。
+// path_query_ordered(u, v, edge, f) は u から v へ進む順に f(l, r, rev) を呼ぶ。
+// rev == true の区間は [l, r) を右から左へ読む。非可換な演算や関数合成で使う。
 struct hld {
+    struct segment {
+        int l, r;
+        bool rev;
+    };
+
   public:
     hld() = default;
     explicit hld(int n) : g(n), parent(n, -1), depth(n), heavy(n, -1), head(n), pos(n), rev(n), subtree_size(n), _n(n) {}
@@ -64,6 +71,41 @@ struct hld {
         std::vector<std::pair<int, int>> res;
         path_query(u, v, edge, [&](int l, int r) { res.push_back({l, r}); });
         return res;
+    }
+
+    template <class F>
+    void path_query_ordered(int u, int v, bool edge, F f) const {
+        for (auto seg : path_segments_ordered(u, v, edge)) {
+            f(seg.l, seg.r, seg.rev);
+        }
+    }
+
+    std::vector<segment> path_segments_ordered(int u, int v, bool edge = false) const {
+        assert(0 <= u && u < _n);
+        assert(0 <= v && v < _n);
+        std::vector<segment> left, right;
+        while (head[u] != head[v]) {
+            if (depth[head[u]] >= depth[head[v]]) {
+                left.push_back({pos[head[u]], pos[u] + 1, true});
+                u = parent[head[u]];
+            } else {
+                right.push_back({pos[head[v]], pos[v] + 1, false});
+                v = parent[head[v]];
+            }
+        }
+        if (depth[u] >= depth[v]) {
+            int l = pos[v] + (edge ? 1 : 0);
+            int r = pos[u] + 1;
+            if (l < r) left.push_back({l, r, true});
+        } else {
+            int l = pos[u] + (edge ? 1 : 0);
+            int r = pos[v] + 1;
+            if (l < r) left.push_back({l, r, false});
+        }
+        for (auto it = right.rbegin(); it != right.rend(); ++it) {
+            left.push_back(*it);
+        }
+        return left;
     }
 
     std::pair<int, int> subtree_query(int v, bool edge = false) const {

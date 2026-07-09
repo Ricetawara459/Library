@@ -3,8 +3,8 @@
 #include <cassert>
 #include <vector>
 
-// Sparse table for idempotent operations such as min/max/gcd.
-// Query is prod(l, r) for a half-open range [l, r), and requires l < r.
+// Sparse Table。min/max/gcd などの冪等な演算に使う。
+// prod(l, r) で半開区間 [l, r) を取得する。空区間は扱わないので l < r が必要。
 template <class S, S (*op)(S, S)>
 struct sparse_table {
   public:

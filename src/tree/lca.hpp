@@ -5,10 +5,10 @@
 #include <queue>
 #include <vector>
 
-// Binary lifting LCA.
-// Usage:
+// ダブリングによる LCA。
+// 使い方:
 //   lca tree(n);
-//   tree.add_edge(u, v, cost);  // cost can be omitted
+//   tree.add_edge(u, v, cost);  // cost は省略可
 //   tree.build(root);
 //   tree.query(u, v), tree.distance(u, v), tree.kth_ancestor(v, k)
 struct lca {

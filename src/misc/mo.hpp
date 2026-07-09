@@ -6,9 +6,9 @@
 #include <numeric>
 #include <vector>
 
-// Mo's algorithm query ordering for half-open ranges [l, r).
-// Use run(add, erase, output) when adding/removing from both ends is symmetric.
-// Use run(add_left, add_right, erase_left, erase_right, output) otherwise.
+// Mo's algorithm のクエリ順序管理。区間は半開区間 [l, r)。
+// 左右どちらから追加/削除しても同じ処理でよい場合は run(add, erase, output) を使う。
+// 左端と右端で処理を分けたい場合は run(add_left, add_right, erase_left, erase_right, output) を使う。
 struct mo {
   public:
     mo() = default;

@@ -4,11 +4,11 @@
 #include <cassert>
 #include <vector>
 
-// Lowlink for undirected graphs.
-// After build():
-//   articulation: articulation points
-//   bridges: bridges as sorted vertex pairs (min(u, v), max(u, v))
-// Multiple edges are handled by edge id.
+// 無向グラフの LowLink。
+// build() 後に以下が使える。
+//   articulation: 関節点の一覧
+//   bridges: 橋の一覧。各辺は (min(u, v), max(u, v)) の形で入る
+// 多重辺は辺 ID で区別して扱う。
 struct lowlink {
     struct edge {
         int to;

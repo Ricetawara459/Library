@@ -20,6 +20,7 @@ struct hld {
     hld() = default;
     explicit hld(int n) : g(n), parent(n, -1), depth(n), heavy(n, -1), head(n), pos(n), rev(n), subtree_size(n), _n(n) {}
 
+    /// 木の無向辺 u-v を追加する。
     void add_edge(int u, int v) {
         assert(0 <= u && u < _n);
         assert(0 <= v && v < _n);
@@ -27,6 +28,7 @@ struct hld {
         g[v].push_back(u);
     }
 
+    /// root を根として HLD の順序を構築する。
     void build(int root = 0) {
         assert(0 <= root && root < _n);
         int cur = 0;
@@ -34,6 +36,7 @@ struct hld {
         dfs_hld(root, root, cur);
     }
 
+    /// u と v の LCA を返す。
     int lca(int u, int v) const {
         assert(0 <= u && u < _n);
         assert(0 <= v && v < _n);
@@ -47,11 +50,13 @@ struct hld {
         return depth[u] < depth[v] ? u : v;
     }
 
+    /// u-v パスの辺数を返す。
     int distance(int u, int v) const {
         int w = lca(u, v);
         return depth[u] + depth[v] - 2 * depth[w];
     }
 
+    /// u-v パスを O(log n) 個の半開区間 [l, r) に分けて f(l, r) を呼ぶ。
     template <class F>
     void path_query(int u, int v, bool edge, F f) const {
         assert(0 <= u && u < _n);
@@ -67,12 +72,14 @@ struct hld {
         if (l < r) f(l, r);
     }
 
+    /// u-v パスを表す半開区間 [l, r) の列を返す。順序は可換演算向け。
     std::vector<std::pair<int, int>> path_segments(int u, int v, bool edge = false) const {
         std::vector<std::pair<int, int>> res;
         path_query(u, v, edge, [&](int l, int r) { res.push_back({l, r}); });
         return res;
     }
 
+    /// u から v へ進む順に f(l, r, rev) を呼ぶ。rev=true は右から左に読む。
     template <class F>
     void path_query_ordered(int u, int v, bool edge, F f) const {
         for (auto seg : path_segments_ordered(u, v, edge)) {
@@ -80,6 +87,7 @@ struct hld {
         }
     }
 
+    /// u から v へ進む順の区間列を返す。非可換演算向け。
     std::vector<segment> path_segments_ordered(int u, int v, bool edge = false) const {
         assert(0 <= u && u < _n);
         assert(0 <= v && v < _n);
@@ -108,21 +116,25 @@ struct hld {
         return left;
     }
 
+    /// v の部分木を表す半開区間 [l, r) を返す。
     std::pair<int, int> subtree_query(int v, bool edge = false) const {
         assert(0 <= v && v < _n);
         return {pos[v] + (edge ? 1 : 0), pos[v] + subtree_size[v]};
     }
 
+    /// 頂点 v の HLD 上の位置 pos[v] を返す。
     int operator[](int v) const {
         assert(0 <= v && v < _n);
         return pos[v];
     }
 
+    /// HLD 上の位置 p に対応する頂点を返す。
     int vertex_at(int p) const {
         assert(0 <= p && p < _n);
         return rev[p];
     }
 
+    /// 頂点数を返す。
     int size() const { return _n; }
 
     std::vector<std::vector<int>> g;

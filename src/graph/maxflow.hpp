@@ -12,6 +12,7 @@ struct mf_graph {
     mf_graph() : _n(0) {}
     explicit mf_graph(int n) : _n(n), g(n) {}
 
+    /// from から to へ容量 cap の有向辺を追加し、辺番号を返す。
     int add_edge(int from, int to, Cap cap) {
         assert(0 <= from && from < _n);
         assert(0 <= to && to < _n);
@@ -33,6 +34,7 @@ struct mf_graph {
         Cap flow;
     };
 
+    /// i 番目に追加した辺の現在の容量・流量を返す。
     edge get_edge(int i) const {
         int m = int(pos.size());
         assert(0 <= i && i < m);
@@ -41,6 +43,7 @@ struct mf_graph {
         return edge{pos[i].first, _e.to, _e.cap + _re.cap, _re.cap};
     }
 
+    /// 追加した全ての辺の現在状態を返す。
     std::vector<edge> edges() const {
         int m = int(pos.size());
         std::vector<edge> result;
@@ -50,6 +53,7 @@ struct mf_graph {
         return result;
     }
 
+    /// i 番目の辺の容量と流量を直接変更する。
     void change_edge(int i, Cap new_cap, Cap new_flow) {
         int m = int(pos.size());
         assert(0 <= i && i < m);
@@ -60,9 +64,11 @@ struct mf_graph {
         _re.cap = new_flow;
     }
 
+    /// s から t への最大流を流せるだけ流す。
     Cap flow(int s, int t) {
         return flow(s, t, std::numeric_limits<Cap>::max());
     }
+    /// 流量上限 flow_limit まで、s から t への最大流を流す。
     Cap flow(int s, int t, Cap flow_limit) {
         assert(0 <= s && s < _n);
         assert(0 <= t && t < _n);
@@ -119,6 +125,7 @@ struct mf_graph {
         return flow;
     }
 
+    /// 最後の flow 後の残余グラフで、s から到達可能な頂点集合を返す。
     std::vector<bool> min_cut(int s) {
         std::vector<bool> visited(_n, false);
         std::queue<int> que;

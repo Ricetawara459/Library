@@ -47,14 +47,17 @@ struct formal_power_series : std::vector<mint> {
     using std::vector<mint>::vector;
     using fps = formal_power_series;
 
+    /// n 次未満、つまり先頭 n 項だけを返す。
     fps pre(int n) const {
         return fps(this->begin(), this->begin() + std::min(n, int(this->size())));
     }
 
+    /// 末尾の 0 係数を削る。
     void shrink() {
         while (!this->empty() && this->back() == mint(0)) this->pop_back();
     }
 
+    /// 多項式を x に代入した値を返す。
     mint eval(mint x) const {
         mint res = 0;
         for (int i = int(this->size()) - 1; i >= 0; i--) {
@@ -99,6 +102,7 @@ struct formal_power_series : std::vector<mint> {
     friend fps operator*(const mint& lhs, fps rhs) { return rhs *= lhs; }
     friend fps operator/(fps lhs, const mint& rhs) { return lhs /= rhs; }
 
+    /// rhs と掛けて deg 項までに切る。
     fps mul_pre(const fps& rhs, int deg) const {
         if (deg <= 0) return {};
         fps res = *this * rhs;
@@ -106,6 +110,7 @@ struct formal_power_series : std::vector<mint> {
         return res;
     }
 
+    /// 形式微分を返す。
     fps diff() const {
         int n = int(this->size());
         if (n <= 1) return {};
@@ -114,6 +119,7 @@ struct formal_power_series : std::vector<mint> {
         return res;
     }
 
+    /// 定数項 0 の形式積分を返す。
     fps integral() const {
         int n = int(this->size());
         fps res(n + 1);
@@ -127,6 +133,7 @@ struct formal_power_series : std::vector<mint> {
         return res;
     }
 
+    /// 逆数を deg 項まで返す。定数項が 0 でないこと。
     fps inv(int deg = -1) const {
         assert(!this->empty() && (*this)[0] != mint(0));
         if (deg == -1) deg = int(this->size());
@@ -143,6 +150,7 @@ struct formal_power_series : std::vector<mint> {
         return res.pre(deg);
     }
 
+    /// log(f) を deg 項まで返す。定数項が 1 であること。
     fps log(int deg = -1) const {
         assert(!this->empty() && (*this)[0] == mint(1));
         if (deg == -1) deg = int(this->size());
@@ -152,6 +160,7 @@ struct formal_power_series : std::vector<mint> {
         return res;
     }
 
+    /// exp(f) を deg 項まで返す。定数項が 0 であること。
     fps exp(int deg = -1) const {
         assert(this->empty() || (*this)[0] == mint(0));
         if (deg == -1) deg = int(this->size());
@@ -167,6 +176,7 @@ struct formal_power_series : std::vector<mint> {
         return res.pre(deg);
     }
 
+    /// f^k を deg 項まで返す。k >= 0。
     fps pow(long long k, int deg = -1) const {
         if (deg == -1) deg = int(this->size());
         if (k == 0) {
@@ -193,6 +203,7 @@ struct formal_power_series : std::vector<mint> {
         return res;
     }
 
+    /// 平方根を deg 項まで返す。存在しない場合は空を返す。
     fps sqrt(int deg = -1) const {
         if (deg == -1) deg = int(this->size());
         if (this->empty()) return fps(deg);

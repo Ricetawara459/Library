@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 
+/// 各 i について s[0..] と s[i..] の LCP 長を返す。
 template <class T>
 std::vector<int> z_algorithm(const std::vector<T>& s) {
     int n = int(s.size());
@@ -29,6 +30,7 @@ std::vector<int> z_algorithm(const std::vector<T>& s) {
     return z;
 }
 
+/// 文字列 s の Z-array を返す。
 std::vector<int> z_algorithm(const std::string& s) {
     int n = int(s.size());
     std::vector<int> s2(n);

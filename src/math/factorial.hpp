@@ -8,7 +8,7 @@ struct factorial {
     factorial() : _n(0), _fact(1, mint(1)), _inv_fact(1, mint(1)) {}
     explicit factorial(int n) : factorial() { extend(n); }
 
-    // 必要に応じてサイズを倍々に拡張する内部関数
+    /// n! まで前計算を拡張する。
     void extend(int n) {
         if (n <= _n) return;
         int next_n = _n == 0 ? 1 : _n;
@@ -29,35 +29,35 @@ struct factorial {
         _n = next_n;
     }
 
-    // 階乗: n!
+    /// n! を返す。n < 0 なら 0。
     mint fact(int n) {
         if (n < 0) return mint(0);
         extend(n);
         return _fact[n];
     }
 
-    // 階乗の逆元: 1 / n!
+    /// 1 / n! を返す。n < 0 なら 0。
     mint fact_inv(int n) {
         if (n < 0) return mint(0);
         extend(n);
         return _inv_fact[n];
     }
 
-    // 順列: nPr
+    /// 順列 nPr を返す。不正な範囲なら 0。
     mint perm(int n, int r) {
         if (r < 0 || n < r) return mint(0);
         extend(n);
         return _fact[n] * _inv_fact[n - r];
     }
 
-    // 組合せ: nCr
+    /// 組合せ nCr を返す。不正な範囲なら 0。
     mint comb(int n, int r) {
         if (r < 0 || n < r) return mint(0);
         extend(n);
         return _fact[n] * _inv_fact[r] * _inv_fact[n - r];
     }
 
-    // 重複組合せ: nHr
+    /// 重複組合せ nHr を返す。不正な範囲なら 0。
     mint homo(int n, int r) {
         if (n < 0 || r < 0) return mint(0);
         if (n == 0 && r == 0) return mint(1);

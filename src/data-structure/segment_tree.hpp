@@ -7,7 +7,9 @@ template <class S, S (*op)(S, S), S (*e)()>
 struct segtree {
   public:
     segtree() : segtree(0) {}
+    /// 長さ n、全要素 e() のセグメント木を作る。
     explicit segtree(int n) : segtree(std::vector<S>(n, e())) {}
+    /// 配列 v からセグメント木を作る。
     explicit segtree(const std::vector<S>& v) : _n(int(v.size())) {
         _log = 0;
         size = 1;
@@ -23,6 +25,7 @@ struct segtree {
         }
     }
 
+    /// 一点更新。a[p] = x。
     void set(int p, S x) {
         assert(0 <= p && p < _n);
         p += size;
@@ -30,11 +33,13 @@ struct segtree {
         for (int i = 1; i <= _log; i++) update(p >> i);
     }
 
+    /// a[p] を返す。
     S get(int p) const {
         assert(0 <= p && p < _n);
         return d[p + size];
     }
 
+    /// 半開区間 [l, r) を op で畳み込む。
     S prod(int l, int r) const {
         assert(0 <= l && l <= r && r <= _n);
         S sml = e(), smr = e();
@@ -50,11 +55,14 @@ struct segtree {
         return op(sml, smr);
     }
 
+    /// 全区間 [0, n) の畳み込み結果を返す。
     S all_prod() const { return d[1]; }
 
+    /// l から右に伸ばして、条件 f が true である最大の右端を返す。
     template <bool (*f)(S)> int max_right(int l) const {
         return max_right(l, [](S x) { return f(x); });
     }
+    /// l から右に伸ばして、条件 f が true である最大の右端を返す。
     template <class F> int max_right(int l, F f) const {
         assert(0 <= l && l <= _n);
         assert(f(e()));
@@ -79,9 +87,11 @@ struct segtree {
         return _n;
     }
 
+    /// r から左に伸ばして、条件 f が true である最小の左端を返す。
     template <bool (*f)(S)> int min_left(int r) const {
         return min_left(r, [](S x) { return f(x); });
     }
+    /// r から左に伸ばして、条件 f が true である最小の左端を返す。
     template <class F> int min_left(int r, F f) const {
         assert(0 <= r && r <= _n);
         assert(f(e()));

@@ -13,6 +13,7 @@ struct mcf_graph {
     mcf_graph() : _n(0) {}
     explicit mcf_graph(int n) : _n(n), g(n) {}
 
+    /// from から to へ容量 cap・費用 cost の有向辺を追加し、辺番号を返す。
     int add_edge(int from, int to, Cap cap, Cost cost) {
         assert(0 <= from && from < _n);
         assert(0 <= to && to < _n);
@@ -36,6 +37,7 @@ struct mcf_graph {
         Cost cost;
     };
 
+    /// i 番目に追加した辺の現在の容量・流量・費用を返す。
     edge get_edge(int i) const {
         int m = int(pos.size());
         assert(0 <= i && i < m);
@@ -44,6 +46,7 @@ struct mcf_graph {
         return edge{pos[i].first, _e.to, _e.cap + _re.cap, _re.cap, _e.cost};
     }
 
+    /// 追加した全ての辺の現在状態を返す。
     std::vector<edge> edges() const {
         int m = int(pos.size());
         std::vector<edge> result;
@@ -53,18 +56,22 @@ struct mcf_graph {
         return result;
     }
 
+    /// s から t へ流せるだけ流し、{流量, 最小費用} を返す。
     std::pair<Cap, Cost> flow(int s, int t) {
         return flow(s, t, std::numeric_limits<Cap>::max());
     }
     
+    /// 流量上限 flow_limit まで流し、{流量, 最小費用} を返す。
     std::pair<Cap, Cost> flow(int s, int t, Cap flow_limit) {
         return slope(s, t, flow_limit).back();
     }
 
+    /// 流量を増やしたときの {流量, 最小費用} の折れ線を返す。
     std::vector<std::pair<Cap, Cost>> slope(int s, int t) {
         return slope(s, t, std::numeric_limits<Cap>::max());
     }
 
+    /// 流量上限つきで、{流量, 最小費用} の折れ線を返す。
     std::vector<std::pair<Cap, Cost>> slope(int s, int t, Cap flow_limit) {
         assert(0 <= s && s < _n);
         assert(0 <= t && t < _n);

@@ -9,10 +9,12 @@ struct scc_graph {
     scc_graph() : _n(0) {}
     explicit scc_graph(int n) : _n(n) {}
 
+    /// from から to へ有向辺を追加する。
     void add_edge(int from, int to) {
         edges.push_back({from, to});
     }
 
+    /// 強連結成分をトポロジカル順に返す。
     std::vector<std::vector<int>> scc() {
         std::vector<int> start(_n + 1, 0);
         for (const auto& e : edges) {

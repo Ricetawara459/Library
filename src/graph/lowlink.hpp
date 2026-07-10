@@ -18,6 +18,7 @@ struct lowlink {
     lowlink() = default;
     explicit lowlink(int n) : _n(n), g(n), ord(n, -1), low(n, -1) {}
 
+    /// 無向辺 u-v を追加する。多重辺も区別される。
     void add_edge(int u, int v) {
         assert(0 <= u && u < _n);
         assert(0 <= v && v < _n);
@@ -27,6 +28,7 @@ struct lowlink {
         g[v].push_back({u, id});
     }
 
+    /// ord/low を計算し、関節点 articulation と橋 bridges を作る。
     void build() {
         articulation.clear();
         bridges.clear();
@@ -41,6 +43,7 @@ struct lowlink {
         std::sort(bridges.begin(), bridges.end());
     }
 
+    /// id 番目に追加した辺が橋なら true。
     bool is_bridge_id(int id) const {
         assert(0 <= id && id < int(edges.size()));
         auto [u, v] = edges[id];
@@ -48,6 +51,7 @@ struct lowlink {
         return ord[u] < low[v];
     }
 
+    /// 頂点数を返す。
     int size() const { return _n; }
 
     int _n = 0;

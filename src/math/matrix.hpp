@@ -14,13 +14,16 @@ struct matrix {
     matrix(int h, int w, T val = T(0)) : h(h), w(w), data(h, std::vector<T>(w, val)) {}
     matrix(const std::vector<std::vector<T>>& d) : h(d.size()), w(d.empty() ? 0 : d[0].size()), data(d) {}
 
+    /// n x n の単位行列を返す。
     static matrix identity(int n) {
         matrix res(n, n);
         for (int i = 0; i < n; i++) res[i][i] = T(1);
         return res;
     }
 
+    /// 行数を返す。
     int height() const { return h; }
+    /// 列数を返す。
     int width() const { return w; }
 
     const std::vector<T>& operator[](int i) const { return data[i]; }
@@ -63,6 +66,7 @@ struct matrix {
     matrix operator-(const matrix& other) const { return matrix(*this) -= other; }
     matrix operator*(const matrix& other) const { return matrix(*this) *= other; }
 
+    /// 正方行列の k 乗を返す。k >= 0。
     matrix pow(long long k) const {
         assert(h == w);
         matrix res = identity(h);

@@ -12,6 +12,7 @@ struct partition_sum {
     removable_pq<T, std::less<T>> que_l;          // 最大値ヒープ
     removable_pq<T, std::greater<T>> que_r;       // 最小値ヒープ
 
+    /// 値 x を追加する。
     void insert(T x) {
         if (que_l.empty() || que_l.top() < x) {
             que_r.push(x);
@@ -20,6 +21,7 @@ struct partition_sum {
         }
     }
 
+    /// 値 x を 1 個削除する。
     void erase(T x) {
         if (que_l.empty() || que_l.top() < x) {
             que_r.erase(x);
@@ -29,6 +31,7 @@ struct partition_sum {
     }
 
     // 小さい方から K 個を左 (que_l) に集め、{左の総和, 右の総和} を返す
+    /// 小さい方から K 個の和と、残りの和を返す。
     std::pair<SumT, SumT> get_sum(int K) {
         assert(0 <= K && K <= que_l.cnt + que_r.cnt);
         while (que_l.cnt < K) {

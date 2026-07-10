@@ -9,7 +9,7 @@ struct twosat {
     twosat() : _n(0), _has_values(false) {}
     explicit twosat(int n) : _n(n), _has_values(false), _answer(n), scc(2 * n) {}
 
-    // (x_i == f) v (x_j == g) というクローズを追加する
+    /// 条件 (x_i == f) OR (x_j == g) を追加する。
     void add_clause(int i, bool f, int j, bool g) {
         assert(0 <= i && i < _n);
         assert(0 <= j && j < _n);
@@ -19,6 +19,7 @@ struct twosat {
         scc.add_edge(2 * j + (g ? 0 : 1), 2 * i + (f ? 1 : 0));
     }
 
+    /// 充足可能なら true。成功時は answer() が使える。
     bool satisfiable() {
         auto scc_res = scc.scc();
         std::vector<int> id(2 * _n);
@@ -31,13 +32,13 @@ struct twosat {
             if (id[2 * i] == id[2 * i + 1]) {
                 return false;
             }
-            // 【修正点】id[偽] < id[真] のときに true と判定する
             _answer[i] = id[2 * i] < id[2 * i + 1];
         }
         _has_values = true;
         return true;
     }
 
+    /// satisfiable() 後の割り当てを返す。
     std::vector<bool> answer() {
         assert(_has_values);
         return _answer;

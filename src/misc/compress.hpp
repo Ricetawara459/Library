@@ -10,21 +10,21 @@ struct compress {
     compress() = default;
     explicit compress(const std::vector<T>& a) { build(a); }
 
-    // ベクターを元に座標圧縮のテーブルを構築
+    /// 配列 a の値を集めて座標圧縮を構築する。
     void build(const std::vector<T>& a) {
         _xs = a;
         std::sort(_xs.begin(), _xs.end());
         _xs.erase(std::unique(_xs.begin(), _xs.end()), _xs.end());
     }
 
-    // 元の値 x が圧縮後に何番目になるか (0-indexed)
+    /// 値 x の圧縮後 ID を返す。x は存在すること。
     int operator()(const T& x) const {
         auto it = std::lower_bound(_xs.begin(), _xs.end(), x);
         assert(it != _xs.end() && *it == x);
         return std::distance(_xs.begin(), it);
     }
 
-    // テーブルに存在しない値かもしれないが、仮に挿入した場合の lower_bound の位置を返す
+    /// 値 x の圧縮後 ID を返す。存在しない場合は挿入位置。
     int get_id(const T& x) const {
         return std::distance(_xs.begin(), std::lower_bound(_xs.begin(), _xs.end(), x));
     }
@@ -38,7 +38,7 @@ struct compress {
     // [] 演算子でも元の値を取得できるようにする
     T operator[](int id) const { return uncompress(id); }
 
-    // 圧縮後の種類数
+     /// 異なる値の個数を返す。
     int size() const { return int(_xs.size()); }
 
   private:

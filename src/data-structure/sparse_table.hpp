@@ -9,10 +9,12 @@ template <class S, S (*op)(S, S)>
 struct sparse_table {
   public:
     sparse_table() = default;
+    /// 配列 v から Sparse Table を作る。op は冪等演算であること。
     explicit sparse_table(const std::vector<S>& v) {
         build(v);
     }
 
+    /// 配列 v で Sparse Table を再構築する。
     void build(const std::vector<S>& v) {
         _n = int(v.size());
         log_table.assign(_n + 1, 0);
@@ -29,12 +31,14 @@ struct sparse_table {
         }
     }
 
+    /// 半開区間 [l, r) の値を O(1) で返す。l < r が必要。
     S prod(int l, int r) const {
         assert(0 <= l && l < r && r <= _n);
         int k = log_table[r - l];
         return op(table[k][l], table[k][r - (1 << k)]);
     }
 
+    /// 管理している配列の長さを返す。
     int size() const { return _n; }
 
   private:

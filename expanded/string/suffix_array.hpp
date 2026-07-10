@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace internal {
+namespace suffix_array_internal {
 
 std::vector<int> sa_naive(const std::vector<int>& s) {
     int n = int(s.size());
@@ -169,7 +169,7 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
     return sa;
 }
 
-}  // namespace internal
+}  // namespace suffix_array_internal
 
 /// 0 <= s[i] <= upper の整数列の suffix array を返す。
 std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
@@ -177,7 +177,7 @@ std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
     for (int d : s) {
         assert(0 <= d && d <= upper);
     }
-    auto sa = internal::sa_is(s, upper);
+    auto sa = suffix_array_internal::sa_is(s, upper);
     return sa;
 }
 
@@ -185,15 +185,15 @@ std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
 template <class T> std::vector<int> suffix_array(const std::vector<T>& s) {
     int n = int(s.size());
     std::vector<int> idx(n);
-    iota(idx.begin(), idx.end(), 0);
-    sort(idx.begin(), idx.end(), [&](int l, int r) { return s[l] < s[r]; });
+    std::iota(idx.begin(), idx.end(), 0);
+    std::sort(idx.begin(), idx.end(), [&](int l, int r) { return s[l] < s[r]; });
     std::vector<int> s2(n);
     int now = 0;
     for (int i = 0; i < n; i++) {
         if (i && s[idx[i - 1]] != s[idx[i]]) now++;
         s2[idx[i]] = now;
     }
-    return internal::sa_is(s2, now);
+    return suffix_array_internal::sa_is(s2, now);
 }
 
 /// 文字列 s の suffix array を返す。
@@ -201,9 +201,9 @@ std::vector<int> suffix_array(const std::string& s) {
     int n = int(s.size());
     std::vector<int> s2(n);
     for (int i = 0; i < n; i++) {
-        s2[i] = s[i];
+        s2[i] = static_cast<unsigned char>(s[i]);
     }
-    return internal::sa_is(s2, 255);
+    return suffix_array_internal::sa_is(s2, 255);
 }
 
 /// suffix array に隣接する suffix 同士の LCP 配列を返す。
@@ -235,7 +235,7 @@ std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
     int n = int(s.size());
     std::vector<int> s2(n);
     for (int i = 0; i < n; i++) {
-        s2[i] = s[i];
+        s2[i] = static_cast<unsigned char>(s[i]);
     }
     return lcp_array(s2, sa);
 }

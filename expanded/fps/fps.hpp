@@ -8,7 +8,7 @@
 
 #line 6 "src/math/convolution.hpp"
 
-namespace internal {
+namespace convolution_internal {
 
 // 汎用冪乗算
 constexpr long long pow_mod_general(long long x, long long n, long long m) {
@@ -142,7 +142,7 @@ std::vector<long long> convolution_ext(std::vector<long long> a, std::vector<lon
     return a;
 }
 
-} // namespace internal
+} // namespace convolution_internal
 
 /// 任意 modint 用の畳み込み。Garner で復元する。
 template <class mint>
@@ -158,16 +158,16 @@ std::vector<mint> any_mod_convolution(const std::vector<mint>& a, const std::vec
     constexpr long long m2 = 754974721;
     constexpr long long m3 = 469762049;
     
-    auto c1 = internal::convolution_ext<m1, 3>(a_ll, b_ll);
-    auto c2 = internal::convolution_ext<m2, 11>(a_ll, b_ll);
-    auto c3 = internal::convolution_ext<m3, 3>(a_ll, b_ll);
+    auto c1 = convolution_internal::convolution_ext<m1, 3>(a_ll, b_ll);
+    auto c2 = convolution_internal::convolution_ext<m2, 11>(a_ll, b_ll);
+    auto c3 = convolution_internal::convolution_ext<m3, 3>(a_ll, b_ll);
     
     int sz = n + m - 1;
     std::vector<mint> res(sz);
     
-    constexpr long long m1_inv_m2 = internal::inv_mod_general(m1, m2);
-    constexpr long long m1_inv_m3 = internal::inv_mod_general(m1, m3);
-    constexpr long long m2_inv_m3 = internal::inv_mod_general(m2, m3);
+    constexpr long long m1_inv_m2 = convolution_internal::inv_mod_general(m1, m2);
+    constexpr long long m1_inv_m3 = convolution_internal::inv_mod_general(m1, m3);
+    constexpr long long m2_inv_m3 = convolution_internal::inv_mod_general(m2, m3);
     
     mint mint_m1 = mint(m1);
     mint mint_m1m2 = mint_m1 * mint(m2);
@@ -191,7 +191,7 @@ std::vector<mint> convolution(const std::vector<mint>& a, const std::vector<mint
         std::vector<long long> a_ll(n), b_ll(m);
         for (int i = 0; i < n; i++) a_ll[i] = a[i].val();
         for (int i = 0; i < m; i++) b_ll[i] = b[i].val();
-        auto c_ll = internal::convolution_ext<998244353, 3>(a_ll, b_ll);
+        auto c_ll = convolution_internal::convolution_ext<998244353, 3>(a_ll, b_ll);
         std::vector<mint> res(n + m - 1);
         for (int i = 0; i < n + m - 1; i++) res[i] = mint(c_ll[i]);
         return res;
@@ -204,7 +204,7 @@ std::vector<mint> convolution(const std::vector<mint>& a, const std::vector<mint
 
 /// 998244353 上で long long 配列の畳み込みを返す。
 std::vector<long long> convolution(const std::vector<long long>& a, const std::vector<long long>& b) {
-    return internal::convolution_ext<998244353, 3>(a, b);
+    return convolution_internal::convolution_ext<998244353, 3>(a, b);
 }
 
 
@@ -217,16 +217,16 @@ std::vector<long long> convolution_ll(const std::vector<long long>& a, const std
     constexpr long long m2 = 754974721;
     constexpr long long m3 = 469762049;
     
-    auto c1 = internal::convolution_ext<m1, 3>(a, b);
-    auto c2 = internal::convolution_ext<m2, 11>(a, b);
-    auto c3 = internal::convolution_ext<m3, 3>(a, b);
+    auto c1 = convolution_internal::convolution_ext<m1, 3>(a, b);
+    auto c2 = convolution_internal::convolution_ext<m2, 11>(a, b);
+    auto c3 = convolution_internal::convolution_ext<m3, 3>(a, b);
     
     int sz = n + m - 1;
     std::vector<long long> res(sz);
     
-    constexpr long long m1_inv_m2 = internal::inv_mod_general(m1, m2);
-    constexpr long long m1_inv_m3 = internal::inv_mod_general(m1, m3);
-    constexpr long long m2_inv_m3 = internal::inv_mod_general(m2, m3);
+    constexpr long long m1_inv_m2 = convolution_internal::inv_mod_general(m1, m2);
+    constexpr long long m1_inv_m3 = convolution_internal::inv_mod_general(m1, m3);
+    constexpr long long m2_inv_m3 = convolution_internal::inv_mod_general(m2, m3);
     
     for (int i = 0; i < sz; i++) {
         long long v1 = c1[i];

@@ -66,6 +66,37 @@ struct matrix {
     matrix operator-(const matrix& other) const { return matrix(*this) -= other; }
     matrix operator*(const matrix& other) const { return matrix(*this) *= other; }
 
+    /// 行列式を返す。T は割り算ができる体であること。計算量 O(n^3)。
+    T determinant() const {
+        assert(h == w);
+        matrix a = *this;
+        T det = T(1);
+        for (int i = 0; i < h; i++) {
+            int pivot = -1;
+            for (int j = i; j < h; j++) {
+                if (a[j][i] != T(0)) {
+                    pivot = j;
+                    break;
+                }
+            }
+            if (pivot == -1) return T(0);
+            if (pivot != i) {
+                std::swap(a[pivot], a[i]);
+                det = -det;
+            }
+            det *= a[i][i];
+            T inv = T(1) / a[i][i];
+            for (int j = i + 1; j < h; j++) {
+                T factor = a[j][i] * inv;
+                if (factor == T(0)) continue;
+                for (int k = i; k < h; k++) {
+                    a[j][k] -= factor * a[i][k];
+                }
+            }
+        }
+        return det;
+    }
+
     /// 正方行列の k 乗を返す。k >= 0。
     matrix pow(long long k) const {
         assert(h == w);

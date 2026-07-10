@@ -7,8 +7,10 @@ template <class T>
 struct fenwick_tree {
   public:
     fenwick_tree() : _n(0) {}
+    /// 長さ n の Fenwick Tree を作る。
     explicit fenwick_tree(int n) : _n(n), data(n, 0) {}
 
+    /// 一点加算。a[p] += x。
     void add(int p, T x) {
         assert(0 <= p && p < _n);
         p++;
@@ -18,6 +20,7 @@ struct fenwick_tree {
         }
     }
 
+    /// 半開区間 [l, r) の総和を返す。
     T sum(int l, int r) const {
         assert(0 <= l && l <= r && r <= _n);
         return sum(r) - sum(l);

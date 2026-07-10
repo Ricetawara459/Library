@@ -140,7 +140,7 @@ std::vector<long long> convolution_ext(std::vector<long long> a, std::vector<lon
 
 } // namespace internal
 
-// 1. 任意の static_modint<MOD> と明示的に連携する畳み込み (Garner)
+/// 任意 modint 用の畳み込み。Garner で復元する。
 template <class mint>
 std::vector<mint> any_mod_convolution(const std::vector<mint>& a, const std::vector<mint>& b) {
     int n = int(a.size()), m = int(b.size());
@@ -178,7 +178,7 @@ std::vector<mint> any_mod_convolution(const std::vector<mint>& a, const std::vec
     return res;
 }
 
-// 2. 標準の mint 版 (★ if constexpr により MOD に応じて自動で最適な処理に分岐)
+/// modint 配列の畳み込みを返す。998244353 なら NTT、それ以外は Garner。
 template <class mint>
 std::vector<mint> convolution(const std::vector<mint>& a, const std::vector<mint>& b) {
     if constexpr (mint::mod() == 998244353) {
@@ -197,12 +197,14 @@ std::vector<mint> convolution(const std::vector<mint>& a, const std::vector<mint
     }
 }
 
-// 3. 標準の long long 版 (Mod 998244353 固定)
+
+/// 998244353 上で long long 配列の畳み込みを返す。
 std::vector<long long> convolution(const std::vector<long long>& a, const std::vector<long long>& b) {
     return internal::convolution_ext<998244353, 3>(a, b);
 }
 
-// 4. 拡張：long long の範囲で正確に計算する畳み込み
+
+/// long long の範囲で正確に畳み込みを返す。
 std::vector<long long> convolution_ll(const std::vector<long long>& a, const std::vector<long long>& b) {
     int n = int(a.size()), m = int(b.size());
     if (n == 0 || m == 0) return {};

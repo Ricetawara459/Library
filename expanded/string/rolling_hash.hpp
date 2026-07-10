@@ -47,6 +47,7 @@ struct rolling_hash {
     template <typename T>
     rolling_hash(const T& s) { build(s); }
 
+    /// 列 s の rolling hash を構築する。
     template <typename T>
     void build(const T& s) {
         int n = int(s.size());
@@ -59,14 +60,14 @@ struct rolling_hash {
         }
     }
 
-    // 区間 [l, r) のハッシュを取得
+    /// 半開区間 [l, r) のハッシュを返す。
     u64 get(int l, int r) const {
         u64 res = hash_table[r] + MOD - mul(hash_table[l], pow_table[r - l]);
         if (res >= MOD) res -= MOD;
         return res;
     }
 
-    // ハッシュ h1 (長さ len1) と h2 (長さ len2) を結合
+    /// ハッシュ h1 の後ろに長さ len2 の列のハッシュ h2 を連結する。
     static u64 connect(u64 h1, u64 h2, int len2) {
         extend_pow(len2);
         u64 res = mul(h1, pow_table[len2]) + h2;

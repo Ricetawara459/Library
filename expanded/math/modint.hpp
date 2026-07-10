@@ -19,9 +19,12 @@ struct static_modint {
         _v = int(x);
     }
 
+    /// 0 以上 mod 未満の整数値を返す。
     int val() const { return _v; }
+    /// 法 MOD を返す。
     static constexpr int mod() { return MOD; }
 
+    /// n 乗を返す。n >= 0。
     mint pow(long long n) const {
         mint res(1), mul(*this);
         while (n > 0) {
@@ -32,6 +35,7 @@ struct static_modint {
         return res;
     }
 
+    /// 逆元を返す。MOD は素数で、値は 0 でないこと。
     mint inv() const {
         return pow(MOD - 2);
     }

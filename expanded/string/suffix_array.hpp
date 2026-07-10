@@ -171,6 +171,7 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
 
 }  // namespace internal
 
+/// 0 <= s[i] <= upper の整数列の suffix array を返す。
 std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
     assert(0 <= upper);
     for (int d : s) {
@@ -180,6 +181,7 @@ std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
     return sa;
 }
 
+/// 比較可能な列 s の suffix array を返す。
 template <class T> std::vector<int> suffix_array(const std::vector<T>& s) {
     int n = int(s.size());
     std::vector<int> idx(n);
@@ -194,6 +196,7 @@ template <class T> std::vector<int> suffix_array(const std::vector<T>& s) {
     return internal::sa_is(s2, now);
 }
 
+/// 文字列 s の suffix array を返す。
 std::vector<int> suffix_array(const std::string& s) {
     int n = int(s.size());
     std::vector<int> s2(n);
@@ -203,10 +206,7 @@ std::vector<int> suffix_array(const std::string& s) {
     return internal::sa_is(s2, 255);
 }
 
-// Reference:
-// T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,
-// Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its
-// Applications
+/// suffix array に隣接する suffix 同士の LCP 配列を返す。
 template <class T>
 std::vector<int> lcp_array(const std::vector<T>& s,
                            const std::vector<int>& sa) {
@@ -230,6 +230,7 @@ std::vector<int> lcp_array(const std::vector<T>& s,
     return lcp;
 }
 
+/// 文字列 s と suffix array から LCP 配列を返す。
 std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
     int n = int(s.size());
     std::vector<int> s2(n);

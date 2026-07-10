@@ -5,7 +5,7 @@
 #include <utility>
 #include <cassert>
 
-// 高速冪乗算: (x^n) % m
+/// x^n mod m を返す。n >= 0, m >= 1。
 long long pow_mod(long long x, long long n, int m) {
     assert(0 <= n);
     assert(1 <= m);
@@ -22,6 +22,7 @@ long long pow_mod(long long x, long long n, int m) {
 }
 
 // 拡張ユークリッドの互除法: {gcd(a, b), x} s.t. ax ≡ gcd(a, b) (mod b)
+/// {g, x} を返す。g = gcd(a,b), ax ≡ g (mod b)。
 constexpr std::pair<long long, long long> inv_gcd(long long a, long long b) {
     a = (a % b + b) % b;
     if (a == 0) return {b, 0};
@@ -38,7 +39,7 @@ constexpr std::pair<long long, long long> inv_gcd(long long a, long long b) {
     return {s, m0};
 }
 
-// 一次関数の床関数の総和: sum_{i=0}^{n-1} floor((ai + b) / m)
+/// sum_{i=0}^{n-1} floor((a*i+b)/m) を返す。
 long long floor_sum(long long n, long long m, long long a, long long b) {
     assert(0 <= n);
     assert(1 <= m);
@@ -73,8 +74,7 @@ long long floor_sum(long long n, long long m, long long a, long long b) {
     return ans;
 }
 
-// 中国剰余定理 (Chinese Remainder Theorem)
-// x ≡ r_i (mod m_i) を満たす {rem, mod} を返す。解なしは {0, 0}
+/// 中国剰余定理。解があれば {rem, mod}、なければ {0, 0} を返す。
 std::pair<long long, long long> crt(const std::vector<long long>& r, const std::vector<long long>& m) {
     assert(r.size() == m.size());
     int n = int(r.size());

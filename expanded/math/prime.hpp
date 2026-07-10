@@ -118,10 +118,12 @@ void factorize_inner(long long n, std::vector<long long>& res) {
 
 // ==================== 1. 巨大な数用 (Pollard's rho / Miller-Rabin) ====================
 
+/// n が素数なら true。64bit 整数に対応。
 constexpr bool is_prime(long long n) {
     return prime_internal::miller_rabin(n);
 }
 
+/// n を素因数分解し、素因数を昇順で返す。
 std::vector<long long> factorize(long long n) {
     std::vector<long long> res;
     if (n <= 1) return res;
@@ -139,6 +141,7 @@ std::vector<long long> factorize(long long n) {
     return res;
 }
 
+/// n の正の約数を昇順で返す。
 std::vector<long long> divisors(long long n) {
     if (n <= 0) return {};
     auto facts = factorize(n);
@@ -174,6 +177,7 @@ struct sieve {
   public:
     sieve() = default;
 
+    /// エラトステネスの篩を n まで拡張する。
     void extend(int n) {
         if (n <= _max_n) return;
         int next_n = _max_n;
@@ -212,6 +216,7 @@ struct sieve {
         }
     }
 
+    /// 篩を使って x を素因数分解する。x <= 構築済み上限。
     std::vector<int> factorize(int x) {
         assert(0 <= x && x <= _max_n);
         std::vector<int> res;
@@ -222,6 +227,7 @@ struct sieve {
         return res;
     }
 
+    /// 篩を使って x の約数を昇順で返す。
     std::vector<int> divisors(int x) {
         assert(0 <= x && x <= _max_n);
         if (x <= 0) return {};
@@ -246,11 +252,13 @@ struct sieve {
         return res;
     }
 
+    /// メビウス関数 μ(x) を返す。
     int mobius(int x) {
         assert(0 <= x && x <= _max_n);
         return _mobius[x];
     }
 
+    /// 篩の範囲内で x が素数なら true。
     bool is_prime(int x) {
         assert(0 <= x && x <= _max_n);
         return x >= 2 && _min_factor[x] == x;
@@ -264,21 +272,25 @@ struct sieve {
 
 inline sieve default_sieve;
 
+/// デフォルト篩を拡張して n を素因数分解する。
 inline std::vector<int> factorize_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.factorize(n);
 }
 
+/// デフォルト篩を拡張して n の約数を返す。
 inline std::vector<int> divisors_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.divisors(n);
 }
 
+/// デフォルト篩を拡張して μ(n) を返す。
 inline int mobius_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.mobius(n);
 }
 
+/// デフォルト篩を拡張して n が素数か判定する。
 inline bool is_prime_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.is_prime(n);

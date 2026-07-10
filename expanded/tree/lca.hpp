@@ -16,6 +16,7 @@ struct lca {
     lca() = default;
     explicit lca(int n) : g(n), depth(n), dist(n), parent(n, -1), _n(n) {}
 
+    /// 木の無向辺 u-v を追加する。w は距離用の重み。
     void add_edge(int u, int v, long long w = 1) {
         assert(0 <= u && u < _n);
         assert(0 <= v && v < _n);
@@ -23,6 +24,7 @@ struct lca {
         g[v].push_back({u, w});
     }
 
+    /// root を根としてダブリング表を構築する。
     void build(int root = 0) {
         assert(0 <= root && root < _n);
         int lg = 1;
@@ -61,6 +63,7 @@ struct lca {
         }
     }
 
+    /// v から k 個上の祖先を返す。存在しなければ -1。
     int kth_ancestor(int v, long long k) const {
         assert(0 <= v && v < _n);
         for (int i = 0; i < int(up.size()) && v != -1; i++) {
@@ -69,6 +72,7 @@ struct lca {
         return v;
     }
 
+    /// u と v の LCA を返す。
     int query(int u, int v) const {
         assert(0 <= u && u < _n);
         assert(0 <= v && v < _n);
@@ -88,11 +92,13 @@ struct lca {
         return query(u, v);
     }
 
+    /// u-v パスの重み付き距離を返す。
     long long distance(int u, int v) const {
         int w = query(u, v);
         return dist[u] + dist[v] - 2 * dist[w];
     }
 
+    /// from から to へ k 辺進んだ頂点を返す。範囲外なら -1。
     int jump(int from, int to, long long k) const {
         int w = query(from, to);
         long long d1 = depth[from] - depth[w];
@@ -102,6 +108,7 @@ struct lca {
         return kth_ancestor(to, d1 + d2 - k);
     }
 
+    /// 頂点数を返す。
     int size() const { return _n; }
 
     std::vector<std::vector<std::pair<int, long long>>> g;

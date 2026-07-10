@@ -14,12 +14,14 @@ struct mo {
     mo() = default;
     explicit mo(int n) : _n(n) {}
 
+    /// 半開区間 [l, r) のクエリを追加する。
     void add_query(int l, int r) {
         assert(0 <= l && l <= r && r <= _n);
         left.push_back(l);
         right.push_back(r);
     }
 
+    /// 左右別々の追加/削除関数で Mo の順にクエリを処理する。
     template <class AddLeft, class AddRight, class EraseLeft, class EraseRight, class Output>
     void run(AddLeft add_left, AddRight add_right, EraseLeft erase_left, EraseRight erase_right, Output output) const {
         int q = int(left.size());
@@ -45,11 +47,13 @@ struct mo {
         }
     }
 
+    /// 追加/削除が左右で同じ場合の簡易版。
     template <class Add, class Erase, class Output>
     void run(Add add, Erase erase, Output output) const {
         run(add, add, erase, erase, output);
     }
 
+    /// 追加したクエリ数を返す。
     int size() const { return int(left.size()); }
 
   private:

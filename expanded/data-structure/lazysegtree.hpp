@@ -13,7 +13,9 @@ template <class S,
 struct lazysegtree {
   public:
     lazysegtree() : lazysegtree(0) {}
+    /// 長さ n、全要素 e() の遅延セグメント木を作る。
     explicit lazysegtree(int n) : lazysegtree(std::vector<S>(n, e())) {}
+    /// 配列 v から遅延セグメント木を作る。
     explicit lazysegtree(const std::vector<S>& v) : _n(int(v.size())) {
         _log = 0;
         size = 1;
@@ -29,6 +31,7 @@ struct lazysegtree {
         }
     }
 
+    /// 一点更新。a[p] = x。
     void set(int p, S x) {
         assert(0 <= p && p < _n);
         p += size;
@@ -37,6 +40,7 @@ struct lazysegtree {
         for (int i = 1; i <= _log; i++) update(p >> i);
     }
 
+    /// 遅延を反映して a[p] を返す。
     S get(int p) {
         assert(0 <= p && p < _n);
         p += size;
@@ -44,6 +48,7 @@ struct lazysegtree {
         return d[p];
     }
 
+    /// 半開区間 [l, r) を op で畳み込む。
     S prod(int l, int r) {
         assert(0 <= l && l <= r && r <= _n);
         if (l == r) return e();
@@ -67,8 +72,10 @@ struct lazysegtree {
         return op(sml, smr);
     }
 
+    /// 全区間 [0, n) の畳み込み結果を返す。
     S all_prod() const { return d[1]; }
 
+    /// 一点に作用 f を適用する。
     void apply(int p, F f) {
         assert(0 <= p && p < _n);
         p += size;
@@ -76,6 +83,7 @@ struct lazysegtree {
         d[p] = mapping(f, d[p]);
         for (int i = 1; i <= _log; i++) update(p >> i);
     }
+    /// 半開区間 [l, r) に作用 f を適用する。
     void apply(int l, int r, F f) {
         assert(0 <= l && l <= r && r <= _n);
         if (l == r) return;

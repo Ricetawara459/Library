@@ -1,12 +1,12 @@
-name: Bundle, Verify and Document
+name: Bundle
 
 on:
   push:
     branches:
-      - main # お使いの初期ブランチ名に合わせてください
+      - main
 
 jobs:
-  bundle_and_verify:
+  bundle:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,50 +17,24 @@ jobs:
 
       - name: Set up Python
         uses: actions/setup-python@v5
-        with:
-          python-stdio: true
 
       - name: Install dependencies
         run: |
           pip install online-judge-verify-helper
-          # もし他に必要なインポートツールがあればここに追記
 
-      # ---- 【ステップ1】先にBundle（自動展開）を実行してプッシュ ----
       - name: Run oj-bundle
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # src 以下のすべての .hpp ファイルをループで処理
           find src -name "*.hpp" | while read -r file; do
-              # 出力先パスの決定 (例: src/string/suffix_array.hpp -> expanded/string/suffix_array.hpp)
               out="expanded/${file#src/}"
-              
-              # 出力先ディレクトリを作成
               mkdir -p "$(dirname "$out")"
-              
-              # oj-bundle を実行して展開
               oj-bundle "$file" > "$out"
           done
-          
-          # 変更（新しく展開されたファイルなど）があればコミット＆プッシュ
+
           if [ -n "$(git status --porcelain expanded)" ]; then
             git add expanded/
             git commit -m "Automated bundle"
             git push origin HEAD:${{ github.ref }}
           fi
-
-      # ---- 【ステップ2】同じ履歴ベースで安全にVerifyを実行 ----
-      - name: Run verification
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}  # ★この行を追記
-        run: |
-          oj-verify run
-
-      # ---- 【ステップ3】最後にドキュメントを生成 ----
-      - name: Generate documentation
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          oj-verify docs

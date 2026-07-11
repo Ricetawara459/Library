@@ -29,13 +29,13 @@ void butterfly_ext(std::vector<long long>& a) {
     int n = int(a.size());
     int h = 0;
     while ((1 << h) < n) h++;
-    
+
     static bool first = true;
     static long long sum_e[30];
     if (first) {
         first = false;
         long long es[30], ies[30];
-        int cnt = 23; 
+        int cnt = 23;
         long long e = pow_mod_general(G, (MOD - 1) >> cnt, MOD);
         long long ie = inv_mod_general(e, MOD);
         for (int i = cnt; i >= 2; i--) {
@@ -50,7 +50,7 @@ void butterfly_ext(std::vector<long long>& a) {
             now = (long long)((__int128)now * ies[i] % MOD);
         }
     }
-    
+
     for (int ph = 1; ph <= h; ph++) {
         int w = 1 << (ph - 1), p = 1 << (h - ph);
         long long now = 1;
@@ -73,13 +73,13 @@ void butterfly_inv_ext(std::vector<long long>& a) {
     int n = int(a.size());
     int h = 0;
     while ((1 << h) < n) h++;
-    
+
     static bool first = true;
     static long long sum_ie[30];
     if (first) {
         first = false;
         long long es[30], ies[30];
-        int cnt = 23; 
+        int cnt = 23;
         long long e = pow_mod_general(G, (MOD - 1) >> cnt, MOD);
         long long ie = inv_mod_general(e, MOD);
         for (int i = cnt; i >= 2; i--) {
@@ -94,7 +94,7 @@ void butterfly_inv_ext(std::vector<long long>& a) {
             now = (long long)((__int128)now * es[i] % MOD);
         }
     }
-    
+
     for (int ph = h; ph >= 1; ph--) {
         int w = 1 << (ph - 1), p = 1 << (h - ph);
         long long now = 1;
@@ -119,17 +119,25 @@ std::vector<long long> convolution_ext(std::vector<long long> a, std::vector<lon
     if (n == 0 || m == 0) return {};
     int z = 1;
     while (z < n + m - 1) z <<= 1;
-    
+
     a.resize(z, 0);
     b.resize(z, 0);
-    
+    for (auto& x : a) {
+        x %= MOD;
+        if (x < 0) x += MOD;
+    }
+    for (auto& x : b) {
+        x %= MOD;
+        if (x < 0) x += MOD;
+    }
+
     butterfly_ext<MOD, G>(a);
     butterfly_ext<MOD, G>(b);
     for (int i = 0; i < z; i++) {
         a[i] = (long long)((__int128)a[i] * b[i] % MOD);
     }
     butterfly_inv_ext<MOD, G>(a);
-    
+
     a.resize(n + m - 1);
     long long iz = inv_mod_general(z, MOD);
     for (int i = 0; i < n + m - 1; i++) {
@@ -145,34 +153,40 @@ template <class mint>
 std::vector<mint> any_mod_convolution(const std::vector<mint>& a, const std::vector<mint>& b) {
     int n = int(a.size()), m = int(b.size());
     if (n == 0 || m == 0) return {};
-    
+
     std::vector<long long> a_ll(n), b_ll(m);
     for (int i = 0; i < n; i++) a_ll[i] = a[i].val();
     for (int i = 0; i < m; i++) b_ll[i] = b[i].val();
-    
+
     constexpr long long m1 = 998244353;
     constexpr long long m2 = 754974721;
     constexpr long long m3 = 469762049;
-    
+
     auto c1 = convolution_internal::convolution_ext<m1, 3>(a_ll, b_ll);
     auto c2 = convolution_internal::convolution_ext<m2, 11>(a_ll, b_ll);
     auto c3 = convolution_internal::convolution_ext<m3, 3>(a_ll, b_ll);
-    
+
     int sz = n + m - 1;
     std::vector<mint> res(sz);
-    
+
     constexpr long long m1_inv_m2 = convolution_internal::inv_mod_general(m1, m2);
     constexpr long long m1_inv_m3 = convolution_internal::inv_mod_general(m1, m3);
     constexpr long long m2_inv_m3 = convolution_internal::inv_mod_general(m2, m3);
-    
+
     mint mint_m1 = mint(m1);
     mint mint_m1m2 = mint_m1 * mint(m2);
-    
+
+    auto mod_norm = [](__int128 x, long long mod) -> long long {
+        x %= mod;
+        if (x < 0) x += mod;
+        return (long long)x;
+    };
+
     for (int i = 0; i < sz; i++) {
         long long v1 = c1[i];
-        long long v2 = (long long)((__int128)(c2[i] - v1 + m2) * m1_inv_m2 % m2);
-        long long v3 = (long long)((__int128)((c3[i] - v1 + m3) * m1_inv_m3 % m3 - v2 + m3) * m2_inv_m3 % m3);
-        
+        long long v2 = mod_norm((__int128)(c2[i] - v1) * m1_inv_m2, m2);
+        long long v3 = mod_norm(((__int128)(c3[i] - v1) * m1_inv_m3 - v2) * m2_inv_m3, m3);
+
         res[i] = mint(v1) + mint(v2) * mint_m1 + mint(v3) * mint_m1m2;
     }
     return res;
@@ -208,27 +222,33 @@ std::vector<long long> convolution(const std::vector<long long>& a, const std::v
 std::vector<long long> convolution_ll(const std::vector<long long>& a, const std::vector<long long>& b) {
     int n = int(a.size()), m = int(b.size());
     if (n == 0 || m == 0) return {};
-    
+
     constexpr long long m1 = 998244353;
     constexpr long long m2 = 754974721;
     constexpr long long m3 = 469762049;
-    
+
     auto c1 = convolution_internal::convolution_ext<m1, 3>(a, b);
     auto c2 = convolution_internal::convolution_ext<m2, 11>(a, b);
     auto c3 = convolution_internal::convolution_ext<m3, 3>(a, b);
-    
+
     int sz = n + m - 1;
     std::vector<long long> res(sz);
-    
+
     constexpr long long m1_inv_m2 = convolution_internal::inv_mod_general(m1, m2);
     constexpr long long m1_inv_m3 = convolution_internal::inv_mod_general(m1, m3);
     constexpr long long m2_inv_m3 = convolution_internal::inv_mod_general(m2, m3);
-    
+
+    auto mod_norm = [](__int128 x, long long mod) -> long long {
+        x %= mod;
+        if (x < 0) x += mod;
+        return (long long)x;
+    };
+
     for (int i = 0; i < sz; i++) {
         long long v1 = c1[i];
-        long long v2 = (long long)((__int128)(c2[i] - v1 + m2) * m1_inv_m2 % m2);
-        long long v3 = (long long)((__int128)((c3[i] - v1 + m3) * m1_inv_m3 % m3 - v2 + m3) * m2_inv_m3 % m3);
-        
+        long long v2 = mod_norm((__int128)(c2[i] - v1) * m1_inv_m2, m2);
+        long long v3 = mod_norm(((__int128)(c3[i] - v1) * m1_inv_m3 - v2) * m2_inv_m3, m3);
+
         res[i] = (long long)((__int128)v1 + (__int128)v2 * m1 + (__int128)v3 * m1 * m2);
     }
     return res;

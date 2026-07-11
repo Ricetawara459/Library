@@ -10,6 +10,8 @@ int main() {
     std::vector<mint> fib{0, 1, 1, 2, 3, 5, 8, 13, 21, 34};
     auto coef = berlekamp_massey(fib);
     assert((coef == std::vector<mint>{1, 1}));
+    fps<mint> ba = fps<mint>(berlekamp_massey(fib));
+    assert((ba == fps<mint>{1, 1}));
     assert(linear_recurrence_kth(fib, coef, 0) == mint(0));
     assert(linear_recurrence_kth(fib, coef, 1) == mint(1));
     assert(linear_recurrence_kth(fib, coef, 10) == mint(55));

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <utility>
 #include <vector>
 
 #include "../math/convolution.hpp"
@@ -46,6 +47,9 @@ template <class mint>
 struct formal_power_series : std::vector<mint> {
     using std::vector<mint>::vector;
     using fps = formal_power_series;
+
+    formal_power_series(const std::vector<mint>& v) : std::vector<mint>(v) {}
+    formal_power_series(std::vector<mint>&& v) : std::vector<mint>(std::move(v)) {}
 
     /// n 次未満、つまり先頭 n 項だけを返す。
     fps pre(int n) const {

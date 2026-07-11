@@ -1,4 +1,7 @@
-#line 2 "src/geometry/geometry_template.hpp"
+#ifndef LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP
+#define LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP
+
+#line 1 "src/geometry/geometry_template.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -53,3 +56,5 @@ int ccw(Point a, Point b, Point c) {
     
     return ON_SEGMENT;
 }
+
+#endif  // LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP

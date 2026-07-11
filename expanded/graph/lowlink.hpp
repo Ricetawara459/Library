@@ -1,4 +1,7 @@
-#line 2 "src/graph/lowlink.hpp"
+#ifndef LIBRARY_GRAPH_LOWLINK_HPP
+#define LIBRARY_GRAPH_LOWLINK_HPP
+
+#line 1 "src/graph/lowlink.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -87,3 +90,5 @@ struct lowlink {
         if (is_articulation) articulation.push_back(v);
     }
 };
+
+#endif  // LIBRARY_GRAPH_LOWLINK_HPP

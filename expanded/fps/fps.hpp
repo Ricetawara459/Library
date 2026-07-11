@@ -1,13 +1,23 @@
-#line 2 "src/fps/fps.hpp"
+#ifndef LIBRARY_FPS_FPS_HPP
+#define LIBRARY_FPS_FPS_HPP
+
+#line 1 "src/fps/fps.hpp"
+
 
 #include <algorithm>
 #include <cassert>
 #include <utility>
 #include <vector>
 
-#line 2 "src/math/convolution.hpp"
+#ifndef LIBRARY_MATH_CONVOLUTION_HPP
+#define LIBRARY_MATH_CONVOLUTION_HPP
 
-#line 6 "src/math/convolution.hpp"
+#line 1 "src/math/convolution.hpp"
+
+
+#include <vector>
+#include <algorithm>
+#include <cassert>
 
 namespace convolution_internal {
 
@@ -258,7 +268,9 @@ std::vector<long long> convolution_ll(const std::vector<long long>& a, const std
     }
     return res;
 }
-#line 9 "src/fps/fps.hpp"
+
+#endif  // LIBRARY_MATH_CONVOLUTION_HPP
+
 
 namespace fps_internal {
 
@@ -583,3 +595,5 @@ mint bmbm(const std::vector<mint>& s, long long k) {
     auto coef = berlekamp_massey(s);
     return linear_recurrence_kth(s, coef, k);
 }
+
+#endif  // LIBRARY_FPS_FPS_HPP

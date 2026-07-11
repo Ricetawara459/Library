@@ -18,20 +18,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
 
-      - name: Install dependencies
-        run: |
-          pip install online-judge-verify-helper
-
-      - name: Run oj-bundle
+      - name: Run expander
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          find src -name "*.hpp" | while read -r file; do
-              out="expanded/${file#src/}"
-              mkdir -p "$(dirname "$out")"
-              oj-bundle "$file" > "$out"
-          done
+          python3 tools/expand.py
 
           if [ -n "$(git status --porcelain expanded)" ]; then
             git add expanded/

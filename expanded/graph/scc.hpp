@@ -1,4 +1,7 @@
-#line 2 "src/graph/scc.hpp"
+#ifndef LIBRARY_GRAPH_SCC_HPP
+#define LIBRARY_GRAPH_SCC_HPP
+
+#line 1 "src/graph/scc.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -105,3 +108,5 @@ struct scc_graph {
     };
     std::vector<edge> edges;
 };
+
+#endif  // LIBRARY_GRAPH_SCC_HPP

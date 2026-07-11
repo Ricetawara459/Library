@@ -1,4 +1,7 @@
-#line 2 "src/graph/maxflow.hpp"
+#ifndef LIBRARY_GRAPH_MAXFLOW_HPP
+#define LIBRARY_GRAPH_MAXFLOW_HPP
+
+#line 1 "src/graph/maxflow.hpp"
 
 #include <vector>
 #include <queue>
@@ -155,3 +158,5 @@ struct mf_graph {
     std::vector<std::pair<int, int>> pos;
     std::vector<std::vector<_edge>> g;
 };
+
+#endif  // LIBRARY_GRAPH_MAXFLOW_HPP

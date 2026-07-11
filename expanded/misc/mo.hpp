@@ -1,4 +1,7 @@
-#line 2 "src/misc/mo.hpp"
+#ifndef LIBRARY_MISC_MO_HPP
+#define LIBRARY_MISC_MO_HPP
+
+#line 1 "src/misc/mo.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -60,3 +63,5 @@ struct mo {
     int _n = 0;
     std::vector<int> left, right;
 };
+
+#endif  // LIBRARY_MISC_MO_HPP

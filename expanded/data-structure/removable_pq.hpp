@@ -1,4 +1,7 @@
-#line 2 "src/data-structure/removable_pq.hpp"
+#ifndef LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
+#define LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
+
+#line 1 "src/data-structure/removable_pq.hpp"
 
 #include <queue>
 #include <vector>
@@ -55,3 +58,5 @@ struct removable_pq {
         }
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP

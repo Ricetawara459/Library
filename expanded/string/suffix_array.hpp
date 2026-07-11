@@ -1,4 +1,8 @@
-#line 2 "src/string/suffix_array.hpp"
+#ifndef LIBRARY_STRING_SUFFIX_ARRAY_HPP
+#define LIBRARY_STRING_SUFFIX_ARRAY_HPP
+
+#line 1 "src/string/suffix_array.hpp"
+
 
 #include <algorithm>
 #include <cassert>
@@ -239,3 +243,5 @@ std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
     }
     return lcp_array(s2, sa);
 }
+
+#endif  // LIBRARY_STRING_SUFFIX_ARRAY_HPP

@@ -1,4 +1,7 @@
-#line 2 "src/math/prime.hpp"
+#ifndef LIBRARY_MATH_PRIME_HPP
+#define LIBRARY_MATH_PRIME_HPP
+
+#line 1 "src/math/prime.hpp"
 
 #include <vector>
 #include <numeric>
@@ -295,3 +298,5 @@ inline bool is_prime_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.is_prime(n);
 }
+
+#endif  // LIBRARY_MATH_PRIME_HPP

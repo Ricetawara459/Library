@@ -1,4 +1,7 @@
-#line 2 "src/string/z_algorithm.hpp"
+#ifndef LIBRARY_STRING_Z_ALGORITHM_HPP
+#define LIBRARY_STRING_Z_ALGORITHM_HPP
+
+#line 1 "src/string/z_algorithm.hpp"
 
 #include <vector>
 #include <string>
@@ -39,3 +42,5 @@ std::vector<int> z_algorithm(const std::string& s) {
     }
     return z_algorithm(s2);
 }
+
+#endif  // LIBRARY_STRING_Z_ALGORITHM_HPP

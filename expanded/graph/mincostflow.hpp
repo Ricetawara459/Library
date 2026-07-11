@@ -1,4 +1,7 @@
-#line 2 "src/graph/mincostflow.hpp"
+#ifndef LIBRARY_GRAPH_MINCOSTFLOW_HPP
+#define LIBRARY_GRAPH_MINCOSTFLOW_HPP
+
+#line 1 "src/graph/mincostflow.hpp"
 
 #include <vector>
 #include <queue>
@@ -158,3 +161,5 @@ struct mcf_graph {
     std::vector<std::pair<int, int>> pos;
     std::vector<std::vector<_edge>> g;
 };
+
+#endif  // LIBRARY_GRAPH_MINCOSTFLOW_HPP

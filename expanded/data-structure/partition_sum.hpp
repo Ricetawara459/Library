@@ -1,13 +1,20 @@
-#line 2 "src/data-structure/partition_sum.hpp"
+#ifndef LIBRARY_DATA_STRUCTURE_PARTITION_SUM_HPP
+#define LIBRARY_DATA_STRUCTURE_PARTITION_SUM_HPP
+
+#line 1 "src/data-structure/partition_sum.hpp"
 
 #include <vector>
 #include <cassert>
 #include <utility>
 #include <functional>
-#line 2 "src/data-structure/removable_pq.hpp"
+#ifndef LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
+#define LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
+
+#line 1 "src/data-structure/removable_pq.hpp"
 
 #include <queue>
-#line 6 "src/data-structure/removable_pq.hpp"
+#include <vector>
+#include <functional>
 
 template <typename T, typename Compare = std::less<T>>
 struct removable_pq {
@@ -60,7 +67,9 @@ struct removable_pq {
         }
     }
 };
-#line 8 "src/data-structure/partition_sum.hpp"
+
+#endif  // LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
+
 
 template <typename T, typename SumT = long long>
 struct partition_sum {
@@ -101,3 +110,5 @@ struct partition_sum {
         return {que_l.sum, que_r.sum};
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_PARTITION_SUM_HPP

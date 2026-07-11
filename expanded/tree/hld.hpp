@@ -1,4 +1,7 @@
-#line 2 "src/tree/hld.hpp"
+#ifndef LIBRARY_TREE_HLD_HPP
+#define LIBRARY_TREE_HLD_HPP
+
+#line 1 "src/tree/hld.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -171,3 +174,5 @@ struct hld {
         }
     }
 };
+
+#endif  // LIBRARY_TREE_HLD_HPP

@@ -1,4 +1,7 @@
-#line 2 "src/math/factorial.hpp"
+#ifndef LIBRARY_MATH_FACTORIAL_HPP
+#define LIBRARY_MATH_FACTORIAL_HPP
+
+#line 1 "src/math/factorial.hpp"
 
 #include <vector>
 
@@ -69,3 +72,5 @@ struct factorial {
     std::vector<mint> _fact;     // privateに隠蔽
     std::vector<mint> _inv_fact; // privateに隠蔽
 };
+
+#endif  // LIBRARY_MATH_FACTORIAL_HPP

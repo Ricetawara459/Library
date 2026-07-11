@@ -1,4 +1,7 @@
-#line 2 "src/data-structure/fenwick_tree.hpp"
+#ifndef LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP
+#define LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP
+
+#line 1 "src/data-structure/fenwick_tree.hpp"
 
 #include <vector>
 #include <cassert>
@@ -39,3 +42,5 @@ struct fenwick_tree {
         return s;
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP

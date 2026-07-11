@@ -1,4 +1,7 @@
-#line 2 "src/string/rolling_hash.hpp"
+#ifndef LIBRARY_STRING_ROLLING_HASH_HPP
+#define LIBRARY_STRING_ROLLING_HASH_HPP
+
+#line 1 "src/string/rolling_hash.hpp"
 
 #include <vector>
 #include <string>
@@ -75,3 +78,5 @@ struct rolling_hash {
         return res;
     }
 };
+
+#endif  // LIBRARY_STRING_ROLLING_HASH_HPP

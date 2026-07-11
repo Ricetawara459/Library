@@ -1,4 +1,8 @@
-#line 2 "src/math/convolution.hpp"
+#ifndef LIBRARY_MATH_CONVOLUTION_HPP
+#define LIBRARY_MATH_CONVOLUTION_HPP
+
+#line 1 "src/math/convolution.hpp"
+
 
 #include <vector>
 #include <algorithm>
@@ -253,3 +257,5 @@ std::vector<long long> convolution_ll(const std::vector<long long>& a, const std
     }
     return res;
 }
+
+#endif  // LIBRARY_MATH_CONVOLUTION_HPP

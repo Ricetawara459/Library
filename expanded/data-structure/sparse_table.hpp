@@ -1,4 +1,7 @@
-#line 2 "src/data-structure/sparse_table.hpp"
+#ifndef LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP
+#define LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP
+
+#line 1 "src/data-structure/sparse_table.hpp"
 
 #include <cassert>
 #include <vector>
@@ -46,3 +49,5 @@ struct sparse_table {
     std::vector<int> log_table;
     std::vector<std::vector<S>> table;
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP

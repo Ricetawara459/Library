@@ -1,4 +1,7 @@
-#line 2 "src/math/matrix.hpp"
+#ifndef LIBRARY_MATH_MATRIX_HPP
+#define LIBRARY_MATH_MATRIX_HPP
+
+#line 1 "src/math/matrix.hpp"
 
 #include <vector>
 #include <cassert>
@@ -121,3 +124,5 @@ struct matrix {
         return os;
     }
 };
+
+#endif  // LIBRARY_MATH_MATRIX_HPP

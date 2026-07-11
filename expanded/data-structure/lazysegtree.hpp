@@ -1,4 +1,7 @@
-#line 2 "src/data-structure/lazysegtree.hpp"
+#ifndef LIBRARY_DATA_STRUCTURE_LAZYSEGTREE_HPP
+#define LIBRARY_DATA_STRUCTURE_LAZYSEGTREE_HPP
+
+#line 1 "src/data-structure/lazysegtree.hpp"
 
 #include <vector>
 #include <cassert>
@@ -130,3 +133,5 @@ struct lazysegtree {
         lz[k] = id();
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_LAZYSEGTREE_HPP

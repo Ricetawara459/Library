@@ -1,10 +1,16 @@
-#line 2 "src/graph/twosat.hpp"
+#ifndef LIBRARY_GRAPH_TWOSAT_HPP
+#define LIBRARY_GRAPH_TWOSAT_HPP
+
+#line 1 "src/graph/twosat.hpp"
 
 #include <vector>
 #include <cassert>
-#line 2 "src/graph/scc.hpp"
+#ifndef LIBRARY_GRAPH_SCC_HPP
+#define LIBRARY_GRAPH_SCC_HPP
 
-#line 4 "src/graph/scc.hpp"
+#line 1 "src/graph/scc.hpp"
+
+#include <vector>
 #include <algorithm>
 #include <utility>
 
@@ -109,7 +115,9 @@ struct scc_graph {
     };
     std::vector<edge> edges;
 };
-#line 6 "src/graph/twosat.hpp"
+
+#endif  // LIBRARY_GRAPH_SCC_HPP
+
 
 struct twosat {
   public:
@@ -157,3 +165,5 @@ struct twosat {
     std::vector<bool> _answer;
     scc_graph scc;
 };
+
+#endif  // LIBRARY_GRAPH_TWOSAT_HPP

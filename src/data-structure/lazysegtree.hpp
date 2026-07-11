@@ -29,9 +29,7 @@ struct lazysegtree {
         d = std::vector<S>(2 * size, e());
         lz = std::vector<F>(size, id());
         for (int i = 0; i < _n; i++) d[size + i] = v[i];
-        for (int i = size - 1; i >= 1; i--) {
-            update(i);
-        }
+        for (int i = size - 1; i >= 1; i--) update(i);
     }
 
     /// 一点更新。a[p] = x。
@@ -86,6 +84,7 @@ struct lazysegtree {
         d[p] = mapping(f, d[p]);
         for (int i = 1; i <= _log; i++) update(p >> i);
     }
+
     /// 半開区間 [l, r) に作用 f を適用する。
     void apply(int l, int r, F f) {
         assert(0 <= l && l <= r && r <= _n);
@@ -115,6 +114,68 @@ struct lazysegtree {
             if (((l >> i) << i) != l) update(l >> i);
             if (((r >> i) << i) != r) update((r - 1) >> i);
         }
+    }
+
+    /// l から右に伸ばして、条件 g が true である最大の右端を返す。
+    template <bool (*g)(S)> int max_right(int l) {
+        return max_right(l, [](S x) { return g(x); });
+    }
+    /// l から右に伸ばして、条件 g が true である最大の右端を返す。
+    template <class G> int max_right(int l, G g) {
+        assert(0 <= l && l <= _n);
+        assert(g(e()));
+        if (l == _n) return _n;
+        l += size;
+        for (int i = _log; i >= 1; i--) push(l >> i);
+        S sm = e();
+        do {
+            while (l % 2 == 0) l >>= 1;
+            if (!g(op(sm, d[l]))) {
+                while (l < size) {
+                    push(l);
+                    l = 2 * l;
+                    if (g(op(sm, d[l]))) {
+                        sm = op(sm, d[l]);
+                        l++;
+                    }
+                }
+                return l - size;
+            }
+            sm = op(sm, d[l]);
+            l++;
+        } while ((l & -l) != l);
+        return _n;
+    }
+
+    /// r から左に伸ばして、条件 g が true である最小の左端を返す。
+    template <bool (*g)(S)> int min_left(int r) {
+        return min_left(r, [](S x) { return g(x); });
+    }
+    /// r から左に伸ばして、条件 g が true である最小の左端を返す。
+    template <class G> int min_left(int r, G g) {
+        assert(0 <= r && r <= _n);
+        assert(g(e()));
+        if (r == 0) return 0;
+        r += size;
+        for (int i = _log; i >= 1; i--) push((r - 1) >> i);
+        S sm = e();
+        do {
+            r--;
+            while (r > 1 && (r % 2)) r >>= 1;
+            if (!g(op(d[r], sm))) {
+                while (r < size) {
+                    push(r);
+                    r = 2 * r + 1;
+                    if (g(op(d[r], sm))) {
+                        sm = op(d[r], sm);
+                        r--;
+                    }
+                }
+                return r + 1 - size;
+            }
+            sm = op(d[r], sm);
+        } while ((r & -r) != r);
+        return 0;
     }
 
   private:

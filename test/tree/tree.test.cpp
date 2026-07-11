@@ -3,7 +3,7 @@
 
 #include "../../src/tree/lca.hpp"
 #include "../../src/tree/hld.hpp"
-#include "../../src/data-structure/segment_tree.hpp"
+#include "../../src/data-structure/segtree.hpp"
 
 int op_sum(int a, int b) { return a + b; }
 int e_sum() { return 0; }

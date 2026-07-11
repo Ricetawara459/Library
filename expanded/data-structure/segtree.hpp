@@ -4,16 +4,10 @@
 #line 1 "src/data-structure/segtree.hpp"
 
 
-#ifndef LIBRARY_DATA_STRUCTURE_SEGMENT_TREE_HPP
-#define LIBRARY_DATA_STRUCTURE_SEGMENT_TREE_HPP
-
-#line 1 "src/data-structure/segment_tree.hpp"
-
-
 #include <vector>
 #include <cassert>
 
-template <class S, S (*op)(S, S), S (*e)()> 
+template <class S, S (*op)(S, S), S (*e)()>
 struct segtree {
   public:
     segtree() : segtree(0) {}
@@ -30,9 +24,7 @@ struct segtree {
 
         d = std::vector<S>(2 * size, e());
         for (int i = 0; i < _n; i++) d[size + i] = v[i];
-        for (int i = size - 1; i >= 1; i--) {
-            update(i);
-        }
+        for (int i = size - 1; i >= 1; i--) update(i);
     }
 
     /// 一点更新。a[p] = x。
@@ -83,7 +75,7 @@ struct segtree {
             while (l % 2 == 0) l >>= 1;
             if (!f(op(sm, d[l]))) {
                 while (l < size) {
-                    l = (2 * l);
+                    l = 2 * l;
                     if (f(op(sm, d[l]))) {
                         sm = op(sm, d[l]);
                         l++;
@@ -113,7 +105,7 @@ struct segtree {
             while (r > 1 && (r % 2)) r >>= 1;
             if (!f(op(d[r], sm))) {
                 while (r < size) {
-                    r = (2 * r + 1);
+                    r = 2 * r + 1;
                     if (f(op(d[r], sm))) {
                         sm = op(d[r], sm);
                         r--;
@@ -132,7 +124,5 @@ struct segtree {
 
     void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
 };
-
-#endif  // LIBRARY_DATA_STRUCTURE_SEGMENT_TREE_HPP
 
 #endif  // LIBRARY_DATA_STRUCTURE_SEGTREE_HPP

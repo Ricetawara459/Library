@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <vector>
-#include "../../src/data-structure/segment_tree.hpp" // 作成したセグ木をインクルード
+#include "../../src/data-structure/segtree.hpp" // 作成したセグ木をインクルード
 
 using namespace std;
 

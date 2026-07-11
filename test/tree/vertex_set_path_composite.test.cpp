@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../../src/data-structure/segment_tree.hpp"
+#include "../../src/data-structure/segtree.hpp"
 #include "../../src/math/modint.hpp"
 #include "../../src/tree/hld.hpp"
 

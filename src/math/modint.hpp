@@ -84,5 +84,6 @@ struct static_modint {
 
 using modint998244353 = static_modint<998244353>;
 using modint1000000007 = static_modint<1000000007>;
+using mint = modint998244353;
 
 #endif  // LIBRARY_MATH_MODINT_HPP

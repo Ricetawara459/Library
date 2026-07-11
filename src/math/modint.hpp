@@ -1,3 +1,6 @@
+#ifndef LIBRARY_MATH_MODINT_HPP
+#define LIBRARY_MATH_MODINT_HPP
+
 #pragma once
 
 #include <iostream>
@@ -81,3 +84,5 @@ struct static_modint {
 
 using modint998244353 = static_modint<998244353>;
 using modint1000000007 = static_modint<1000000007>;
+
+#endif  // LIBRARY_MATH_MODINT_HPP

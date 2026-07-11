@@ -1,3 +1,6 @@
+#ifndef LIBRARY_FPS_FPS_HPP
+#define LIBRARY_FPS_FPS_HPP
+
 #pragma once
 
 #include <algorithm>
@@ -330,3 +333,5 @@ mint bmbm(const std::vector<mint>& s, long long k) {
     auto coef = berlekamp_massey(s);
     return linear_recurrence_kth(s, coef, k);
 }
+
+#endif  // LIBRARY_FPS_FPS_HPP

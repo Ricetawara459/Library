@@ -1,3 +1,6 @@
+#ifndef LIBRARY_STRING_SUFFIX_ARRAY_HPP
+#define LIBRARY_STRING_SUFFIX_ARRAY_HPP
+
 #pragma once
 
 #include <algorithm>
@@ -239,3 +242,5 @@ std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
     }
     return lcp_array(s2, sa);
 }
+
+#endif  // LIBRARY_STRING_SUFFIX_ARRAY_HPP

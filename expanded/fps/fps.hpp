@@ -473,3 +473,89 @@ struct formal_power_series : std::vector<mint> {
 
 template <class mint>
 using fps = formal_power_series<mint>;
+
+/// Bostan-Mori 法。P(x) / Q(x) の x^n 係数を O(d log d log n) で返す。Q[0] != 0。
+template <class mint>
+mint bostan_mori(formal_power_series<mint> p, formal_power_series<mint> q, long long n) {
+    assert(!q.empty() && q[0] != mint(0));
+    p.shrink();
+    q.shrink();
+    while (n > 0) {
+        formal_power_series<mint> q_neg = q;
+        for (int i = 1; i < int(q_neg.size()); i += 2) q_neg[i] = -q_neg[i];
+
+        formal_power_series<mint> s = p * q_neg;
+        formal_power_series<mint> t = q * q_neg;
+
+        formal_power_series<mint> np;
+        for (int i = int(n & 1); i < int(s.size()); i += 2) np.push_back(s[i]);
+
+        formal_power_series<mint> nq;
+        for (int i = 0; i < int(t.size()); i += 2) nq.push_back(t[i]);
+
+        p = np;
+        q = nq;
+        n >>= 1;
+    }
+    return p.empty() ? mint(0) : p[0] / q[0];
+}
+
+/// Berlekamp-Massey。s[n] = sum_{i=0}^{d-1} c[i] * s[n-i-1] となる最小漸化式 c を返す。
+template <class mint>
+std::vector<mint> berlekamp_massey(const std::vector<mint>& s) {
+    std::vector<mint> c{1}, b{1};
+    int l = 0, m = 1;
+    mint bb = 1;
+
+    for (int n = 0; n < int(s.size()); n++) {
+        mint d = s[n];
+        for (int i = 1; i <= l; i++) d += c[i] * s[n - i];
+        if (d == mint(0)) {
+            m++;
+            continue;
+        }
+
+        std::vector<mint> t = c;
+        mint coef = d / bb;
+        if (int(c.size()) < int(b.size()) + m) c.resize(b.size() + m);
+        for (int i = 0; i < int(b.size()); i++) c[i + m] -= coef * b[i];
+
+        if (2 * l <= n) {
+            l = n + 1 - l;
+            b = t;
+            bb = d;
+            m = 1;
+        } else {
+            m++;
+        }
+    }
+
+    std::vector<mint> res(l);
+    for (int i = 0; i < l; i++) res[i] = -c[i + 1];
+    return res;
+}
+
+/// 線形漸化式の k 項目を返す。coef は s[n] = sum coef[i] * s[n-i-1] の形。
+template <class mint>
+mint linear_recurrence_kth(const std::vector<mint>& init, const std::vector<mint>& coef, long long k) {
+    int d = int(coef.size());
+    assert(d >= 0);
+    if (k < int(init.size())) return init[k];
+    if (d == 0) return mint(0);
+    assert(int(init.size()) >= d);
+
+    formal_power_series<mint> a(init.begin(), init.begin() + d);
+    formal_power_series<mint> q(d + 1);
+    q[0] = 1;
+    for (int i = 0; i < d; i++) q[i + 1] = -coef[i];
+
+    formal_power_series<mint> p = (a * q).pre(d);
+    return bostan_mori(p, q, k);
+}
+
+/// 先頭項列 s から BM で漸化式を推定し、Bostan-Mori で k 項目を返す。
+template <class mint>
+mint bmbm(const std::vector<mint>& s, long long k) {
+    auto coef = berlekamp_massey(s);
+    return linear_recurrence_kth(s, coef, k);
+}

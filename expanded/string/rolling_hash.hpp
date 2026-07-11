@@ -3,6 +3,7 @@
 
 #line 1 "src/string/rolling_hash.hpp"
 
+
 #include <vector>
 #include <string>
 #include <chrono>

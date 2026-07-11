@@ -3,6 +3,7 @@
 
 #line 1 "src/data-structure/segment_tree.hpp"
 
+
 #include <vector>
 #include <cassert>
 

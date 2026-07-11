@@ -3,6 +3,7 @@
 
 #line 1 "src/math/matrix.hpp"
 
+
 #include <vector>
 #include <cassert>
 #include <iostream>

@@ -1,3 +1,6 @@
+#ifndef LIBRARY_DATA_STRUCTURE_SEGMENT_TREE_HPP
+#define LIBRARY_DATA_STRUCTURE_SEGMENT_TREE_HPP
+
 #pragma once
 
 #include <vector>
@@ -122,3 +125,5 @@ struct segtree {
 
     void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_SEGMENT_TREE_HPP

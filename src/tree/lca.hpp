@@ -1,3 +1,6 @@
+#ifndef LIBRARY_TREE_LCA_HPP
+#define LIBRARY_TREE_LCA_HPP
+
 #pragma once
 
 #include <algorithm>
@@ -120,3 +123,5 @@ struct lca {
     int _n = 0;
     std::vector<std::vector<int>> up;
 };
+
+#endif  // LIBRARY_TREE_LCA_HPP

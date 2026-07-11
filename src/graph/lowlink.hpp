@@ -1,3 +1,6 @@
+#ifndef LIBRARY_GRAPH_LOWLINK_HPP
+#define LIBRARY_GRAPH_LOWLINK_HPP
+
 #pragma once
 
 #include <algorithm>
@@ -87,3 +90,5 @@ struct lowlink {
         if (is_articulation) articulation.push_back(v);
     }
 };
+
+#endif  // LIBRARY_GRAPH_LOWLINK_HPP

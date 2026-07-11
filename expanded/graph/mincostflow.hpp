@@ -3,6 +3,7 @@
 
 #line 1 "src/graph/mincostflow.hpp"
 
+
 #include <vector>
 #include <queue>
 #include <algorithm>

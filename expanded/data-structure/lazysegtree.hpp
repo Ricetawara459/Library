@@ -3,6 +3,7 @@
 
 #line 1 "src/data-structure/lazysegtree.hpp"
 
+
 #include <vector>
 #include <cassert>
 

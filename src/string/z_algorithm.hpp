@@ -1,3 +1,6 @@
+#ifndef LIBRARY_STRING_Z_ALGORITHM_HPP
+#define LIBRARY_STRING_Z_ALGORITHM_HPP
+
 #pragma once
 
 #include <vector>
@@ -39,3 +42,5 @@ std::vector<int> z_algorithm(const std::string& s) {
     }
     return z_algorithm(s2);
 }
+
+#endif  // LIBRARY_STRING_Z_ALGORITHM_HPP

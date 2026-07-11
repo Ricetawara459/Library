@@ -1,3 +1,6 @@
+#ifndef LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP
+#define LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP
+
 #pragma once
 
 #include <vector>
@@ -39,3 +42,5 @@ struct fenwick_tree {
         return s;
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP

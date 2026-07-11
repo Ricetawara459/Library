@@ -3,12 +3,14 @@
 
 #line 1 "src/graph/twosat.hpp"
 
+
 #include <vector>
 #include <cassert>
 #ifndef LIBRARY_GRAPH_SCC_HPP
 #define LIBRARY_GRAPH_SCC_HPP
 
 #line 1 "src/graph/scc.hpp"
+
 
 #include <vector>
 #include <algorithm>

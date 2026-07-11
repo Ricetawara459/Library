@@ -3,6 +3,7 @@
 
 #line 1 "src/graph/scc.hpp"
 
+
 #include <vector>
 #include <algorithm>
 #include <utility>

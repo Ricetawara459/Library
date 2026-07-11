@@ -1,0 +1,8 @@
+#ifndef LIBRARY_DATA_STRUCTURE_SEGTREE_HPP
+#define LIBRARY_DATA_STRUCTURE_SEGTREE_HPP
+
+#pragma once
+
+#include "segment_tree.hpp"
+
+#endif  // LIBRARY_DATA_STRUCTURE_SEGTREE_HPP

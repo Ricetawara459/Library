@@ -1,3 +1,6 @@
+#ifndef LIBRARY_MISC_MO_HPP
+#define LIBRARY_MISC_MO_HPP
+
 #pragma once
 
 #include <algorithm>
@@ -60,3 +63,5 @@ struct mo {
     int _n = 0;
     std::vector<int> left, right;
 };
+
+#endif  // LIBRARY_MISC_MO_HPP

@@ -1,3 +1,6 @@
+#ifndef LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP
+#define LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP
+
 #pragma once
 
 #include <cassert>
@@ -46,3 +49,5 @@ struct sparse_table {
     std::vector<int> log_table;
     std::vector<std::vector<S>> table;
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP

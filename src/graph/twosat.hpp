@@ -1,3 +1,6 @@
+#ifndef LIBRARY_GRAPH_TWOSAT_HPP
+#define LIBRARY_GRAPH_TWOSAT_HPP
+
 #pragma once
 
 #include <vector>
@@ -50,3 +53,5 @@ struct twosat {
     std::vector<bool> _answer;
     scc_graph scc;
 };
+
+#endif  // LIBRARY_GRAPH_TWOSAT_HPP

@@ -3,6 +3,7 @@
 
 #line 1 "src/misc/compress.hpp"
 
+
 #include <vector>
 #include <algorithm>
 #include <cassert>

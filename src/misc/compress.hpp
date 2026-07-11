@@ -1,3 +1,6 @@
+#ifndef LIBRARY_MISC_COMPRESS_HPP
+#define LIBRARY_MISC_COMPRESS_HPP
+
 #pragma once
 
 #include <vector>
@@ -44,3 +47,5 @@ struct compress {
   private:
     std::vector<T> _xs;
 };
+
+#endif  // LIBRARY_MISC_COMPRESS_HPP

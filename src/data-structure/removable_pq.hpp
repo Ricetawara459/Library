@@ -1,3 +1,6 @@
+#ifndef LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
+#define LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
+
 #pragma once
 
 #include <queue>
@@ -55,3 +58,5 @@ struct removable_pq {
         }
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP

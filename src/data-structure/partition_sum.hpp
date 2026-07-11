@@ -1,3 +1,6 @@
+#ifndef LIBRARY_DATA_STRUCTURE_PARTITION_SUM_HPP
+#define LIBRARY_DATA_STRUCTURE_PARTITION_SUM_HPP
+
 #pragma once
 
 #include <vector>
@@ -45,3 +48,5 @@ struct partition_sum {
         return {que_l.sum, que_r.sum};
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_PARTITION_SUM_HPP

@@ -1,3 +1,6 @@
+#ifndef LIBRARY_TREE_HLD_HPP
+#define LIBRARY_TREE_HLD_HPP
+
 #pragma once
 
 #include <algorithm>
@@ -171,3 +174,5 @@ struct hld {
         }
     }
 };
+
+#endif  // LIBRARY_TREE_HLD_HPP

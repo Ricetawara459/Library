@@ -1,3 +1,6 @@
+#ifndef LIBRARY_DATA_STRUCTURE_LAZYSEGTREE_HPP
+#define LIBRARY_DATA_STRUCTURE_LAZYSEGTREE_HPP
+
 #pragma once
 
 #include <vector>
@@ -130,3 +133,5 @@ struct lazysegtree {
         lz[k] = id();
     }
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_LAZYSEGTREE_HPP

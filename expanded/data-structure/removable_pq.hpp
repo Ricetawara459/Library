@@ -3,6 +3,7 @@
 
 #line 1 "src/data-structure/removable_pq.hpp"
 
+
 #include <queue>
 #include <vector>
 #include <functional>

@@ -3,6 +3,7 @@
 
 #line 1 "src/data-structure/fenwick_tree.hpp"
 
+
 #include <vector>
 #include <cassert>
 

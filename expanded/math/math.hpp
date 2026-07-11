@@ -3,6 +3,7 @@
 
 #line 1 "src/math/math.hpp"
 
+
 #include <vector>
 #include <algorithm>
 #include <utility>

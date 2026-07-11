@@ -1,3 +1,6 @@
+#ifndef LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP
+#define LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP
+
 #pragma once
 
 #include <cmath>
@@ -53,3 +56,5 @@ int ccw(Point a, Point b, Point c) {
     
     return ON_SEGMENT;
 }
+
+#endif  // LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP

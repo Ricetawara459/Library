@@ -3,6 +3,7 @@
 
 #line 1 "src/math/factorial.hpp"
 
+
 #include <vector>
 
 template <class mint>

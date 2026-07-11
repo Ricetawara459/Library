@@ -1,3 +1,6 @@
+#ifndef LIBRARY_MATH_MATH_HPP
+#define LIBRARY_MATH_MATH_HPP
+
 #pragma once
 
 #include <vector>
@@ -102,3 +105,5 @@ std::pair<long long, long long> crt(const std::vector<long long>& r, const std::
     }
     return {r0, m0};
 }
+
+#endif  // LIBRARY_MATH_MATH_HPP

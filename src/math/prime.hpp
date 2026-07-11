@@ -1,3 +1,6 @@
+#ifndef LIBRARY_MATH_PRIME_HPP
+#define LIBRARY_MATH_PRIME_HPP
+
 #pragma once
 
 #include <vector>
@@ -295,3 +298,5 @@ inline bool is_prime_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.is_prime(n);
 }
+
+#endif  // LIBRARY_MATH_PRIME_HPP

@@ -1,3 +1,6 @@
+#ifndef LIBRARY_DATA_STRUCTURE_DSU_HPP
+#define LIBRARY_DATA_STRUCTURE_DSU_HPP
+
 #pragma once
 
 #include <vector>
@@ -63,3 +66,5 @@ struct dsu {
     // 正の値の場合：親のインデックス
     std::vector<int> parent_or_size;
 };
+
+#endif  // LIBRARY_DATA_STRUCTURE_DSU_HPP

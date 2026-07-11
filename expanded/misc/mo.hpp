@@ -3,6 +3,7 @@
 
 #line 1 "src/misc/mo.hpp"
 
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>

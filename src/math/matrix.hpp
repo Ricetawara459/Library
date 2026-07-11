@@ -1,3 +1,6 @@
+#ifndef LIBRARY_MATH_MATRIX_HPP
+#define LIBRARY_MATH_MATRIX_HPP
+
 #pragma once
 
 #include <vector>
@@ -121,3 +124,5 @@ struct matrix {
         return os;
     }
 };
+
+#endif  // LIBRARY_MATH_MATRIX_HPP

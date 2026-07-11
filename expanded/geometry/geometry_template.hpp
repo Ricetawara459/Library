@@ -3,6 +3,7 @@
 
 #line 1 "src/geometry/geometry_template.hpp"
 
+
 #include <cmath>
 #include <iostream>
 

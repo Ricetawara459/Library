@@ -1,3 +1,6 @@
+#ifndef LIBRARY_GRAPH_MINCOSTFLOW_HPP
+#define LIBRARY_GRAPH_MINCOSTFLOW_HPP
+
 #pragma once
 
 #include <vector>
@@ -158,3 +161,5 @@ struct mcf_graph {
     std::vector<std::pair<int, int>> pos;
     std::vector<std::vector<_edge>> g;
 };
+
+#endif  // LIBRARY_GRAPH_MINCOSTFLOW_HPP

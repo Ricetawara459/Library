@@ -3,6 +3,7 @@
 
 #line 1 "src/data-structure/sparse_table.hpp"
 
+
 #include <cassert>
 #include <vector>
 

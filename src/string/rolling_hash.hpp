@@ -1,3 +1,6 @@
+#ifndef LIBRARY_STRING_ROLLING_HASH_HPP
+#define LIBRARY_STRING_ROLLING_HASH_HPP
+
 #pragma once
 
 #include <vector>
@@ -75,3 +78,5 @@ struct rolling_hash {
         return res;
     }
 };
+
+#endif  // LIBRARY_STRING_ROLLING_HASH_HPP

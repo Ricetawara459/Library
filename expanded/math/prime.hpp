@@ -3,6 +3,7 @@
 
 #line 1 "src/math/prime.hpp"
 
+
 #include <vector>
 #include <numeric>
 #include <algorithm>

@@ -7,8 +7,10 @@
 #include <limits>
 #include <set>
 
+namespace cht_internal {
+
 template <class T>
-struct convex_hull_trick {
+struct line_container {
   private:
     struct line {
         mutable T a, b; // y = ax + b
@@ -46,10 +48,9 @@ struct convex_hull_trick {
     }
 
   public:
-    convex_hull_trick() = default;
+    line_container() = default;
 
-    /// 直線 y = ax + b を追加する。任意の順番で追加してよい。
-    void add_line(T a, T b) {
+    void add(T a, T b) {
         auto z = lines.insert({a, b, 0});
         auto y = z++;
         auto x = y;
@@ -62,38 +63,56 @@ struct convex_hull_trick {
         }
     }
 
-    /// 最大値クエリ用に、直線 y = ax + b を追加する。
-    void add_max_line(T a, T b) {
-        add_line(a, b);
-    }
-
-    /// 直線が 1 本以上入っているかを返す。
     bool empty() const { return lines.empty(); }
-    /// 入っている直線の本数を返す。不要になった直線は内部で消える。
     int size() const { return int(lines.size()); }
 
-    /// x における最大値 max(ax+b) を返す。
-    T max(T x) const {
+    T query(T x) const {
         assert(!lines.empty());
         auto l = *lines.lower_bound(x);
         return l.a * x + l.b;
     }
+};
 
-    /// x における最小値 min(ax+b) を返す。
-    T min(T x) const {
-        return -max(x);
-    }
+} // namespace cht_internal
 
-    /// 最小値クエリ用に、直線 y = ax + b を追加する。
-    void add_min_line(T a, T b) {
-        add_line(-a, -b);
-    }
+template <class T>
+struct cht_max {
+  public:
+    cht_max() = default;
+
+    /// 最大値クエリ用に直線 y = ax + b を追加する。任意の順番で追加してよい。
+    void add(T a, T b) { hull.add(a, b); }
 
     /// x における最大値 max(ax+b) を返す。
-    T query_max(T x) const { return max(x); }
+    T query(T x) const { return hull.query(x); }
+
+    /// 直線が 1 本以上入っているかを返す。
+    bool empty() const { return hull.empty(); }
+    /// 入っている直線の本数を返す。不要になった直線は内部で消える。
+    int size() const { return hull.size(); }
+
+  private:
+    cht_internal::line_container<T> hull;
+};
+
+template <class T>
+struct cht_min {
+  public:
+    cht_min() = default;
+
+    /// 最小値クエリ用に直線 y = ax + b を追加する。任意の順番で追加してよい。
+    void add(T a, T b) { hull.add(-a, -b); }
 
     /// x における最小値 min(ax+b) を返す。
-    T query_min(T x) const { return min(x); }
+    T query(T x) const { return -hull.query(x); }
+
+    /// 直線が 1 本以上入っているかを返す。
+    bool empty() const { return hull.empty(); }
+    /// 入っている直線の本数を返す。不要になった直線は内部で消える。
+    int size() const { return hull.size(); }
+
+  private:
+    cht_internal::line_container<T> hull;
 };
 
 #endif  // LIBRARY_DATA_STRUCTURE_CONVEX_HULL_TRICK_HPP

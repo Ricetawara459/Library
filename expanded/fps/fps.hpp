@@ -50,6 +50,13 @@ struct static_modint {
     /// 法 MOD を返す。
     static constexpr int mod() { return MOD; }
 
+    /// 0 <= v < mod を満たす値を、剰余を取らずに構築する。
+    static mint raw(int v) {
+        mint res;
+        res._v = v;
+        return res;
+    }
+
     /// n 乗を返す。n >= 0。
     mint pow(long long n) const {
         mint res(1), mul(*this);
@@ -209,7 +216,10 @@ void butterfly_inv(std::vector<mint>& a) {
                 mint l = a[i + offset];
                 mint r = a[i + offset + p];
                 a[i + offset] = l + r;
-                a[i + offset + p] = (l - r) * now;
+                unsigned long long diff =
+                    (unsigned long long)(mint::mod()) + l.val() - r.val();
+                a[i + offset + p] =
+                    mint::raw(int(diff * now.val() % mint::mod()));
             }
             if (s + 1 < w) now *= sum_ie[__builtin_ctz(~unsigned(s))];
         }
@@ -334,6 +344,22 @@ std::vector<mint> convolution(const std::vector<mint>& a,
     }
     if constexpr (mint::mod() == 998244353) {
         return convolution_internal::convolution_ntt<mint, 3>(a, b);
+    } else {
+        return any_mod_convolution(a, b);
+    }
+}
+
+/// 所有権を渡せる配列の畳み込み。入力領域を再利用してコピーを減らす。
+template <class mint>
+std::vector<mint> convolution(std::vector<mint>&& a,
+                              std::vector<mint>&& b) {
+    if (a.empty() || b.empty()) return {};
+    if (std::min(a.size(), b.size()) <= convolution_internal::naive_threshold) {
+        return convolution_internal::convolution_naive(a, b);
+    }
+    if constexpr (mint::mod() == 998244353) {
+        return convolution_internal::convolution_ntt<mint, 3>(
+            std::move(a), std::move(b));
     } else {
         return any_mod_convolution(a, b);
     }
@@ -503,7 +529,7 @@ struct formal_power_series : std::vector<mint> {
         if (deg <= 0) return {};
         fps lhs = pre(deg);
         fps rhs_pre = rhs.pre(deg);
-        auto values = convolution<mint>(lhs, rhs_pre);
+        auto values = convolution<mint>(std::move(lhs), std::move(rhs_pre));
         fps res(std::move(values));
         if (int(res.size()) > deg) res.resize(deg);
         return res;

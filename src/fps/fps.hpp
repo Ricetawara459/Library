@@ -114,7 +114,7 @@ struct formal_power_series : std::vector<mint> {
         if (deg <= 0) return {};
         fps lhs = pre(deg);
         fps rhs_pre = rhs.pre(deg);
-        auto values = convolution<mint>(lhs, rhs_pre);
+        auto values = convolution<mint>(std::move(lhs), std::move(rhs_pre));
         fps res(std::move(values));
         if (int(res.size()) > deg) res.resize(deg);
         return res;

@@ -108,7 +108,10 @@ void butterfly_inv(std::vector<mint>& a) {
                 mint l = a[i + offset];
                 mint r = a[i + offset + p];
                 a[i + offset] = l + r;
-                a[i + offset + p] = (l - r) * now;
+                unsigned long long diff =
+                    (unsigned long long)(mint::mod()) + l.val() - r.val();
+                a[i + offset + p] =
+                    mint::raw(int(diff * now.val() % mint::mod()));
             }
             if (s + 1 < w) now *= sum_ie[__builtin_ctz(~unsigned(s))];
         }
@@ -233,6 +236,22 @@ std::vector<mint> convolution(const std::vector<mint>& a,
     }
     if constexpr (mint::mod() == 998244353) {
         return convolution_internal::convolution_ntt<mint, 3>(a, b);
+    } else {
+        return any_mod_convolution(a, b);
+    }
+}
+
+/// 所有権を渡せる配列の畳み込み。入力領域を再利用してコピーを減らす。
+template <class mint>
+std::vector<mint> convolution(std::vector<mint>&& a,
+                              std::vector<mint>&& b) {
+    if (a.empty() || b.empty()) return {};
+    if (std::min(a.size(), b.size()) <= convolution_internal::naive_threshold) {
+        return convolution_internal::convolution_naive(a, b);
+    }
+    if constexpr (mint::mod() == 998244353) {
+        return convolution_internal::convolution_ntt<mint, 3>(
+            std::move(a), std::move(b));
     } else {
         return any_mod_convolution(a, b);
     }

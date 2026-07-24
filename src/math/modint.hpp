@@ -27,6 +27,13 @@ struct static_modint {
     /// 法 MOD を返す。
     static constexpr int mod() { return MOD; }
 
+    /// 0 <= v < mod を満たす値を、剰余を取らずに構築する。
+    static mint raw(int v) {
+        mint res;
+        res._v = v;
+        return res;
+    }
+
     /// n 乗を返す。n >= 0。
     mint pow(long long n) const {
         mint res(1), mul(*this);

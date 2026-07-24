@@ -566,14 +566,41 @@ struct formal_power_series : std::vector<mint> {
         assert(!this->empty() && (*this)[0] != mint(0));
         if (deg == -1) deg = int(this->size());
         fps res{(*this)[0].inv()};
-        for (int m = 1; m < deg; m <<= 1) {
-            int nxt_deg = std::min(2 * m, deg);
-            fps f = pre(nxt_deg);
-            fps g = f.mul_pre(res, nxt_deg);
-            g.resize(nxt_deg);
-            g[0] = mint(2) - g[0];
-            for (int i = 1; i < nxt_deg; i++) g[i] = -g[i];
-            res = res.mul_pre(g, nxt_deg);
+        if constexpr (mint::mod() == 998244353) {
+            for (int m = 1; m < deg; m <<= 1) {
+                int z = 2 * m;
+                int nxt_deg = std::min(z, deg);
+                fps f(z), g(z);
+                int f_size = std::min(z, int(this->size()));
+                std::copy_n(this->begin(), f_size, f.begin());
+                std::copy(res.begin(), res.end(), g.begin());
+
+                convolution_internal::butterfly<mint, 3>(f);
+                convolution_internal::butterfly<mint, 3>(g);
+                for (int i = 0; i < z; i++) f[i] *= g[i];
+                convolution_internal::butterfly_inv<mint, 3>(f);
+
+                mint iz = mint(z).inv();
+                std::fill(f.begin(), f.begin() + m, mint(0));
+                for (int i = m; i < z; i++) f[i] *= -iz;
+
+                convolution_internal::butterfly<mint, 3>(f);
+                for (int i = 0; i < z; i++) f[i] *= g[i];
+                convolution_internal::butterfly_inv<mint, 3>(f);
+
+                res.resize(nxt_deg);
+                for (int i = m; i < nxt_deg; i++) res[i] = f[i] * iz;
+            }
+        } else {
+            for (int m = 1; m < deg; m <<= 1) {
+                int nxt_deg = std::min(2 * m, deg);
+                fps f = pre(nxt_deg);
+                fps g = f.mul_pre(res, nxt_deg);
+                g.resize(nxt_deg);
+                g[0] = mint(2) - g[0];
+                for (int i = 1; i < nxt_deg; i++) g[i] = -g[i];
+                res = res.mul_pre(g, nxt_deg);
+            }
         }
         res.resize(deg);
         return res;

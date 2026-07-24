@@ -87,7 +87,7 @@ struct formal_power_series : std::vector<mint> {
 
     fps& operator*=(const fps& rhs) {
         auto res = convolution<mint>(*this, rhs);
-        this->assign(res.begin(), res.end());
+        this->swap(res);
         return *this;
     }
 
@@ -112,7 +112,10 @@ struct formal_power_series : std::vector<mint> {
     /// rhs と掛けて deg 項までに切る。
     fps mul_pre(const fps& rhs, int deg) const {
         if (deg <= 0) return {};
-        fps res = *this * rhs;
+        fps lhs = pre(deg);
+        fps rhs_pre = rhs.pre(deg);
+        auto values = convolution<mint>(lhs, rhs_pre);
+        fps res(std::move(values));
         if (int(res.size()) > deg) res.resize(deg);
         return res;
     }
@@ -130,11 +133,14 @@ struct formal_power_series : std::vector<mint> {
     fps integral() const {
         int n = int(this->size());
         fps res(n + 1);
+        assert(n < mint::mod());
         static std::vector<mint> invs{0, 1};
         if (int(invs.size()) <= n) {
             int old = int(invs.size());
             invs.resize(n + 1);
-            for (int i = old; i <= n; i++) invs[i] = mint(i).inv();
+            for (int i = old; i <= n; i++) {
+                invs[i] = -mint(mint::mod() / i) * invs[mint::mod() % i];
+            }
         }
         for (int i = 0; i < n; i++) res[i + 1] = (*this)[i] * invs[i + 1];
         return res;
@@ -154,7 +160,8 @@ struct formal_power_series : std::vector<mint> {
             for (int i = 1; i < nxt_deg; i++) g[i] = -g[i];
             res = res.mul_pre(g, nxt_deg);
         }
-        return res.pre(deg);
+        res.resize(deg);
+        return res;
     }
 
     /// log(f) を deg 項まで返す。定数項が 1 であること。
@@ -162,7 +169,7 @@ struct formal_power_series : std::vector<mint> {
         assert(!this->empty() && (*this)[0] == mint(1));
         if (deg == -1) deg = int(this->size());
         if (deg == 0) return {};
-        fps res = (diff() * inv(deg)).pre(deg - 1).integral();
+        fps res = diff().mul_pre(inv(deg), deg - 1).integral();
         res.resize(deg);
         return res;
     }
@@ -173,14 +180,16 @@ struct formal_power_series : std::vector<mint> {
         if (deg == -1) deg = int(this->size());
         fps res{1};
         for (int m = 1; m < deg; m <<= 1) {
-            fps f = pre(2 * m);
-            fps g = res.log(2 * m);
-            f.resize(2 * m);
-            for (int i = 0; i < 2 * m; i++) f[i] -= g[i];
+            int nxt_deg = std::min(2 * m, deg);
+            fps f = pre(nxt_deg);
+            fps g = res.log(nxt_deg);
+            f.resize(nxt_deg);
+            for (int i = 0; i < nxt_deg; i++) f[i] -= g[i];
             f[0] += 1;
-            res = (res * f).pre(2 * m);
+            res = res.mul_pre(f, nxt_deg);
         }
-        return res.pre(deg);
+        res.resize(deg);
+        return res;
     }
 
     /// f^k を deg 項まで返す。k >= 0。
@@ -238,10 +247,13 @@ struct formal_power_series : std::vector<mint> {
         fps res{s};
         mint inv2 = mint(2).inv();
         for (int m = 1; m < deg; m <<= 1) {
-            fps f = pre(2 * m);
-            res = ((res + f * res.inv(2 * m)) * inv2).pre(2 * m);
+            int nxt_deg = std::min(2 * m, deg);
+            fps f = pre(nxt_deg);
+            res = (res + f.mul_pre(res.inv(nxt_deg), nxt_deg)) * inv2;
+            res.resize(nxt_deg);
         }
-        return res.pre(deg);
+        res.resize(deg);
+        return res;
     }
 };
 
@@ -261,14 +273,17 @@ mint bostan_mori(formal_power_series<mint> p, formal_power_series<mint> q, long 
         formal_power_series<mint> s = p * q_neg;
         formal_power_series<mint> t = q * q_neg;
 
-        formal_power_series<mint> np;
-        for (int i = int(n & 1); i < int(s.size()); i += 2) np.push_back(s[i]);
+        int parity = int(n & 1);
+        int np_size = int(s.size()) <= parity ? 0 : (int(s.size()) - parity + 1) / 2;
+        formal_power_series<mint> np(np_size);
+        for (int i = 0; i < np_size; i++) np[i] = s[2 * i + parity];
 
-        formal_power_series<mint> nq;
-        for (int i = 0; i < int(t.size()); i += 2) nq.push_back(t[i]);
+        int nq_size = (int(t.size()) + 1) / 2;
+        formal_power_series<mint> nq(nq_size);
+        for (int i = 0; i < nq_size; i++) nq[i] = t[2 * i];
 
-        p = np;
-        q = nq;
+        p = std::move(np);
+        q = std::move(nq);
         n >>= 1;
     }
     return p.empty() ? mint(0) : p[0] / q[0];
@@ -278,6 +293,8 @@ mint bostan_mori(formal_power_series<mint> p, formal_power_series<mint> q, long 
 template <class mint>
 std::vector<mint> berlekamp_massey(const std::vector<mint>& s) {
     std::vector<mint> c{1}, b{1};
+    c.reserve(s.size() + 1);
+    b.reserve(s.size() + 1);
     int l = 0, m = 1;
     mint bb = 1;
 

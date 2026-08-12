@@ -1,6 +1,7 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_14_B"
 
 #include <iostream>
+#include <cassert>
 #include <string>
 #include <vector>
 #include "../../src/string/rolling_hash.hpp"
@@ -19,6 +20,22 @@ int main() {
     // テキスト T とパターン P のハッシュをそれぞれ構築
     rolling_hash rh_t(t);
     rolling_hash rh_p(p);
+
+    // 左右への連結が、完成後の文字列から直接構築したハッシュと一致することを確認
+    {
+        rolling_hash joined(string("cd"));
+        joined.concat_left('b');
+        joined.concat_left(string("a"));
+        joined.concat_right('e');
+        joined.concat_right(string("fg"));
+        rolling_hash expected(string("abcdefg"));
+        assert(joined.size() == 7);
+        for (int l = 0; l <= joined.size(); l++) {
+            for (int r = l; r <= joined.size(); r++) {
+                assert(joined.get(l, r) == expected.get(l, r));
+            }
+        }
+    }
 
     unsigned long long target_hash = rh_p.get(0, p.size());
     int len_t = t.size();

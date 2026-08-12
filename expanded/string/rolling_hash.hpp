@@ -8,6 +8,7 @@
 #include <string>
 #include <chrono>
 #include <random>
+#include <type_traits>
 
 struct rolling_hash {
     using u64 = unsigned long long;
@@ -45,7 +46,7 @@ struct rolling_hash {
         return res;
     }
 
-    std::vector<u64> hash_table;
+    std::vector<u64> hash_table{0};
 
     rolling_hash() = default;
     template <typename T>
@@ -59,7 +60,13 @@ struct rolling_hash {
         extend_pow(n);
         u64 b = get_base();
         for (int i = 0; i < n; i++) {
-            hash_table[i + 1] = mul(hash_table[i], b) + s[i];
+            u64 value;
+            if constexpr (std::is_same_v<std::decay_t<decltype(s[i])>, char>) {
+                value = static_cast<unsigned char>(s[i]);
+            } else {
+                value = static_cast<u64>(s[i]);
+            }
+            hash_table[i + 1] = mul(hash_table[i], b) + value;
             if (hash_table[i + 1] >= MOD) hash_table[i + 1] -= MOD;
         }
     }
@@ -69,6 +76,65 @@ struct rolling_hash {
         u64 res = hash_table[r] + MOD - mul(hash_table[l], pow_table[r - l]);
         if (res >= MOD) res -= MOD;
         return res;
+    }
+
+    /// 現在の列の長さを返す。
+    int size() const {
+        return int(hash_table.size()) - 1;
+    }
+
+    /// 現在の列の右に文字列 s を連結する。計算量 O(|s|)。
+    void concat_right(const std::string& s) {
+        int old_size = size();
+        int add_size = int(s.size());
+        extend_pow(old_size + add_size);
+        hash_table.reserve(old_size + add_size + 1);
+        u64 b = get_base();
+        for (char c : s) {
+            u64 next = mul(hash_table.back(), b) + static_cast<unsigned char>(c);
+            if (next >= MOD) next -= MOD;
+            hash_table.push_back(next);
+        }
+    }
+
+    /// 現在の列の右に文字 c を連結する。計算量 O(1)。
+    void concat_right(char c) {
+        extend_pow(size() + 1);
+        u64 next = mul(hash_table.back(), get_base()) + static_cast<unsigned char>(c);
+        if (next >= MOD) next -= MOD;
+        hash_table.push_back(next);
+    }
+
+    /// 現在の列の左に文字列 s を連結する。計算量 O(size() + |s|)。
+    void concat_left(const std::string& s) {
+        if (s.empty()) return;
+        int left_size = int(s.size());
+        int old_size = size();
+        extend_pow(left_size + old_size);
+
+        std::vector<u64> next(left_size + old_size + 1, 0);
+        u64 b = get_base();
+        for (int i = 0; i < left_size; i++) {
+            next[i + 1] = mul(next[i], b) + static_cast<unsigned char>(s[i]);
+            if (next[i + 1] >= MOD) next[i + 1] -= MOD;
+        }
+        u64 left_hash = next[left_size];
+        for (int i = 1; i <= old_size; i++) {
+            next[left_size + i] = connect(left_hash, hash_table[i], i);
+        }
+        hash_table.swap(next);
+    }
+
+    /// 現在の列の左に文字 c を連結する。計算量 O(size())。
+    void concat_left(char c) {
+        int old_size = size();
+        extend_pow(old_size + 1);
+        u64 value = static_cast<unsigned char>(c);
+        hash_table.resize(old_size + 2);
+        for (int i = old_size; i >= 1; i--) {
+            hash_table[i + 1] = connect(value, hash_table[i], i);
+        }
+        hash_table[1] = value;
     }
 
     /// ハッシュ h1 の後ろに長さ len2 の列のハッシュ h2 を連結する。

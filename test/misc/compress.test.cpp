@@ -28,11 +28,11 @@ int main() {
         long long x;
         std::cin >> l >> r >> x;
 
-        int id = cmp.get_id(x);
-        if (id == cmp.size() || cmp[id] != x) {
+        if (!cmp.contains(x)) {
             std::cout << 0 << '\n';
             continue;
         }
+        int id = cmp.get_id(x);
         auto first = std::lower_bound(
             positions[id].begin(), positions[id].end(), l);
         auto last = std::lower_bound(

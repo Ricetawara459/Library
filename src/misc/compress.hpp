@@ -63,6 +63,13 @@ struct compress {
             _xs.begin(), std::lower_bound(_xs.begin(), _xs.end(), x)));
     }
 
+    /// 値 x が圧縮対象として存在するかを返す。build() 後に呼ぶこと。
+    bool contains(const T& x) const {
+        assert(_built);
+        auto it = std::lower_bound(_xs.begin(), _xs.end(), x);
+        return it != _xs.end() && *it == x;
+    }
+
     /// 圧縮後ID id に対応する元の値を返す。
     const T& uncompress(int id) const {
         assert(_built);

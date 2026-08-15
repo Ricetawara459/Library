@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include "modint.hpp"
+
 template <class mint>
 struct factorial {
   public:
@@ -72,5 +74,7 @@ struct factorial {
     std::vector<mint> _fact;     // privateに隠蔽
     std::vector<mint> _inv_fact; // privateに隠蔽
 };
+
+factorial<mint> fc;
 
 #endif  // LIBRARY_MATH_FACTORIAL_HPP

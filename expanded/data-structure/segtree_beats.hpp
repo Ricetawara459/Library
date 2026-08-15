@@ -9,8 +9,17 @@
 #include <vector>
 
 // 抽象化 Segment Tree Beats。
-// mapping(f, x) は「ノード x だけで作用 f を処理できたか」を返す。
-// false を返す場合、x を変更しないこと。composition(f, g) は f(g(x)) を表す。
+//
+// 使い方:
+//   S: 区間情報。op(S, S) で左右の子をマージできるようにする。
+//   F: 区間に作用させるクエリ情報。
+//   mapping(f, x): ノード x 全体に作用 f をまとめて適用できるなら x を更新して true。
+//                  まとめて適用できないなら x を変更せず false。false の時だけ子へ降りる。
+//   composition(f, g): 既存の遅延 g の後に新しい作用 f を行う合成、つまり f(g(x))。
+//   id(): 何もしない作用。
+//
+// 例: range chmin/chmax/add/sum は snippets/segtree_beats_chmin_chmax_sum.cpp を参照。
+// 注意: Beats の償却計算量は S と mapping の設計に依存する。
 template <class S,
           S (*op)(S, S),
           S (*e)(),

@@ -1,5 +1,19 @@
 // Range Chmin Chmax Add Range Sum 用の Segment Tree Beats チートシート。
 // src/data-structure/segtree_beats.hpp を include して使う。
+//
+// 最小例:
+//   using namespace beats_chmin_chmax_sum;
+//   vector<long long> a = {1, 2, 3};
+//   range_chmin_chmax_add_sum seg(a);
+//   seg.range_add(l, r, x);    // a[i] += x
+//   seg.range_chmin(l, r, x);  // a[i] = min(a[i], x)
+//   seg.range_chmax(l, r, x);  // a[i] = max(a[i], x)
+//   long long s = seg.range_sum(l, r);
+//
+// 抽象化Beatsへ移植する時に見る場所:
+//   S は sum/max1/max2/max_count/min1/min2/min_count/len を持つ区間情報。
+//   mapping(f, x) が true ならノードだけで処理完了、false なら子へ降りる。
+//   false を返す時は x を変更しないよう、一度 y にコピーしてから成功時だけ x = y としている。
 
 #include <algorithm>
 #include <limits>

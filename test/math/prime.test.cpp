@@ -18,10 +18,12 @@ int main() {
         cin >> a;
         
         auto res = factorize(a);
-        
-        cout << res.size();
-        for (long long p : res) {
-            cout << " " << p;
+
+        int count = 0;
+        for (auto [p, e] : res) count += e;
+        cout << count;
+        for (auto [p, e] : res) {
+            while (e--) cout << " " << p;
         }
         cout << "\n";
     }

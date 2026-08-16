@@ -11,6 +11,7 @@
 #include <cassert>
 #include <chrono>
 #include <random>
+#include <utility>
 
 namespace prime_internal {
 
@@ -127,36 +128,37 @@ constexpr bool is_prime(long long n) {
     return prime_internal::miller_rabin(n);
 }
 
-/// n を素因数分解し、素因数を昇順で返す。
-std::vector<long long> factorize(long long n) {
-    std::vector<long long> res;
-    if (n <= 1) return res;
-    
+/// n を素因数分解し、(素因数 p, 指数 e) の組を p の昇順で返す。
+std::vector<std::pair<long long, int>> factorize(long long n) {
+    std::vector<long long> factors;
+    if (n <= 1) return {};
+
     // 小さな素数で予め割っておくことで、ポラード・ローの呼び出し回数を劇的に減らす
     for (long long p : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47}) {
         while (n % p == 0) {
-            res.push_back(p);
+            factors.push_back(p);
             n /= p;
         }
     }
-    
-    prime_internal::factorize_inner(n, res);
-    std::sort(res.begin(), res.end());
+
+    prime_internal::factorize_inner(n, factors);
+    std::sort(factors.begin(), factors.end());
+
+    std::vector<std::pair<long long, int>> res;
+    for (long long p : factors) {
+        if (res.empty() || res.back().first != p) {
+            res.push_back({p, 1});
+        } else {
+            res.back().second++;
+        }
+    }
     return res;
 }
 
 /// n の正の約数を昇順で返す。
 std::vector<long long> divisors(long long n) {
     if (n <= 0) return {};
-    auto facts = factorize(n);
-    std::vector<std::pair<long long, int>> pf;
-    for (long long p : facts) {
-        if (pf.empty() || pf.back().first != p) {
-            pf.push_back({p, 1});
-        } else {
-            pf.back().second++;
-        }
-    }
+    auto pf = factorize(n);
     std::vector<long long> res;
     auto dfs = [&](auto self, int idx, long long val) -> void {
         if (idx == (int)pf.size()) {
@@ -220,13 +222,18 @@ struct sieve {
         }
     }
 
-    /// 篩を使って x を素因数分解する。x <= 構築済み上限。
-    std::vector<int> factorize(int x) {
+    /// 篩を使って x を素因数分解し、(素因数 p, 指数 e) の組を p の昇順で返す。x <= 構築済み上限。
+    std::vector<std::pair<int, int>> factorize(int x) {
         assert(0 <= x && x <= _max_n);
-        std::vector<int> res;
+        std::vector<std::pair<int, int>> res;
         while (x > 1) {
-            res.push_back(_min_factor[x]);
-            x /= _min_factor[x];
+            int p = _min_factor[x];
+            int cnt = 0;
+            while (x % p == 0) {
+                cnt++;
+                x /= p;
+            }
+            res.push_back({p, cnt});
         }
         return res;
     }
@@ -276,8 +283,8 @@ struct sieve {
 
 inline sieve default_sieve;
 
-/// デフォルト篩を拡張して n を素因数分解する。
-inline std::vector<int> factorize_sieve(int n) {
+/// デフォルト篩を拡張して n を素因数分解し、(素因数 p, 指数 e) の組を返す。
+inline std::vector<std::pair<int, int>> factorize_sieve(int n) {
     default_sieve.extend(n);
     return default_sieve.factorize(n);
 }

@@ -7,10 +7,10 @@
 
 using namespace std;
 
-using mint = modint1000000007;
+using mint1e9 = modint1000000007;
 
 // グローバル領域に宣言して、型指定なしで使えるようにする
-factorial<mint> fc;
+factorial<mint1e9> fac;
 
 int main() {
     int t;
@@ -22,11 +22,11 @@ int main() {
         if (scanf("%c(%d,%d)\n", &type, &n, &r) != 3) break;
 
         if (type == 'C') {
-            printf("%d\n", fc.comb(n, r).val());
+            printf("%d\n", fac.comb(n, r).val());
         } else if (type == 'P') {
-            printf("%d\n", fc.perm(n, r).val());
+            printf("%d\n", fac.perm(n, r).val());
         } else if (type == 'H') {
-            printf("%d\n", fc.homo(n, r).val());
+            printf("%d\n", fac.homo(n, r).val());
         }
     }
 

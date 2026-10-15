@@ -25,7 +25,7 @@ int main() {
     assert(st.prod(1, 4) == 2);
     assert(st.prod(2, 4) == 3);
 
-    mo solver(int(a.size()));
+    mo_algorithm solver(int(a.size()));
     solver.add_query(0, 3);
     solver.add_query(2, 6);
     solver.add_query(1, 5);

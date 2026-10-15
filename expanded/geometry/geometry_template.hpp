@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP
 #define LIBRARY_GEOMETRY_GEOMETRY_TEMPLATE_HPP
 
-#line 1 "src/geometry/geometry_template.hpp"
 
 
 #include <cmath>

@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_MATH_MATH_HPP
 #define LIBRARY_MATH_MATH_HPP
 
-#line 1 "src/math/math.hpp"
 
 
 #include <vector>

@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_TREE_LCA_HPP
 #define LIBRARY_TREE_LCA_HPP
 
-#line 1 "src/tree/lca.hpp"
 
 
 #include <algorithm>

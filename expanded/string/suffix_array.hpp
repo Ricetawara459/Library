@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_STRING_SUFFIX_ARRAY_HPP
 #define LIBRARY_STRING_SUFFIX_ARRAY_HPP
 
-#line 1 "src/string/suffix_array.hpp"
 
 
 #include <algorithm>

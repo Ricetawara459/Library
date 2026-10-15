@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_STRING_ROLLING_HASH_HPP
 #define LIBRARY_STRING_ROLLING_HASH_HPP
 
-#line 1 "src/string/rolling_hash.hpp"
 
 
 #include <vector>

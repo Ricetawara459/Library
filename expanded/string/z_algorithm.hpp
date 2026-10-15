@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_STRING_Z_ALGORITHM_HPP
 #define LIBRARY_STRING_Z_ALGORITHM_HPP
 
-#line 1 "src/string/z_algorithm.hpp"
 
 
 #include <vector>

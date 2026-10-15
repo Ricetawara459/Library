@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_GRAPH_MAXFLOW_HPP
 #define LIBRARY_GRAPH_MAXFLOW_HPP
 
-#line 1 "src/graph/maxflow.hpp"
 
 
 #include <vector>

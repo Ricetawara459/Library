@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP
 #define LIBRARY_DATA_STRUCTURE_FENWICK_TREE_HPP
 
-#line 1 "src/data-structure/fenwick_tree.hpp"
 
 
 #include <vector>

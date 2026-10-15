@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_GRAPH_MINCOSTFLOW_HPP
 #define LIBRARY_GRAPH_MINCOSTFLOW_HPP
 
-#line 1 "src/graph/mincostflow.hpp"
 
 
 #include <vector>

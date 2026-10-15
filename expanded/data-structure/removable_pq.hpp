@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
 #define LIBRARY_DATA_STRUCTURE_REMOVABLE_PQ_HPP
 
-#line 1 "src/data-structure/removable_pq.hpp"
 
 
 #include <queue>

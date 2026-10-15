@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_STRING_TRIE_HPP
 #define LIBRARY_STRING_TRIE_HPP
 
-#line 1 "src/string/trie.hpp"
 
 
 #include <array>

@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 EXPANDED = ROOT / "expanded"
+SOURCE_URL = "https://github.com/Ricetawara459/Library"
 
 LOCAL_INCLUDE_RE = re.compile(r'^\s*#include\s+"([^"]+)"')
 
@@ -72,14 +73,9 @@ def expand_file(path: Path, emitted: set[Path], stack: list[Path]) -> str:
         body.append(line)
 
     emitted.add(path)
-    rel_name = (Path("src") / rel).as_posix()
     content = "\n".join(body).rstrip()
-    if content:
-        content = f"#line 1 \"{rel_name}\"\n{content}\n"
-    else:
-        content = f"#line 1 \"{rel_name}\"\n"
 
-    return f"#ifndef {guard}\n#define {guard}\n\n{content}\n#endif  // {guard}\n"
+    return f"#ifndef {guard}\n#define {guard}\n\n{content}\n\n#endif  // {guard}\n"
 
 
 def main() -> None:
@@ -88,7 +84,7 @@ def main() -> None:
         rel = source.relative_to(SRC)
         out = EXPANDED / rel
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(expand_file(source, emitted, []))
+        out.write_text(f"// Source: {SOURCE_URL}\n" + expand_file(source, emitted, []))
 
 
 if __name__ == "__main__":

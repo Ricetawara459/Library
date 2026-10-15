@@ -1,14 +1,13 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_MATH_BINOMIAL_PREFIX_SUM_HPP
 #define LIBRARY_MATH_BINOMIAL_PREFIX_SUM_HPP
 
-#line 1 "src/math/binomial_prefix_sum.hpp"
 
 
 #include <cassert>
 #ifndef LIBRARY_MATH_FACTORIAL_HPP
 #define LIBRARY_MATH_FACTORIAL_HPP
 
-#line 1 "src/math/factorial.hpp"
 
 
 #include <vector>
@@ -16,7 +15,6 @@
 #ifndef LIBRARY_MATH_MODINT_HPP
 #define LIBRARY_MATH_MODINT_HPP
 
-#line 1 "src/math/modint.hpp"
 
 
 #include <iostream>

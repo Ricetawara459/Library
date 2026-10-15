@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_GRAPH_TWOSAT_HPP
 #define LIBRARY_GRAPH_TWOSAT_HPP
 
-#line 1 "src/graph/twosat.hpp"
 
 
 #include <vector>
@@ -9,7 +9,6 @@
 #ifndef LIBRARY_GRAPH_SCC_HPP
 #define LIBRARY_GRAPH_SCC_HPP
 
-#line 1 "src/graph/scc.hpp"
 
 
 #include <vector>

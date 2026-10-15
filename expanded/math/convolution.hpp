@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_MATH_CONVOLUTION_HPP
 #define LIBRARY_MATH_CONVOLUTION_HPP
 
-#line 1 "src/math/convolution.hpp"
 
 
 #include <algorithm>
@@ -12,7 +12,6 @@
 #ifndef LIBRARY_MATH_MODINT_HPP
 #define LIBRARY_MATH_MODINT_HPP
 
-#line 1 "src/math/modint.hpp"
 
 
 #include <iostream>

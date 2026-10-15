@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP
 #define LIBRARY_DATA_STRUCTURE_SPARSE_TABLE_HPP
 
-#line 1 "src/data-structure/sparse_table.hpp"
 
 
 #include <cassert>

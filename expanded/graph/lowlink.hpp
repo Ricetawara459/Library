@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_GRAPH_LOWLINK_HPP
 #define LIBRARY_GRAPH_LOWLINK_HPP
 
-#line 1 "src/graph/lowlink.hpp"
 
 
 #include <algorithm>

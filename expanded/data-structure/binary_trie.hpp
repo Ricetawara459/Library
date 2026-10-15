@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_DATA_STRUCTURE_BINARY_TRIE_HPP
 #define LIBRARY_DATA_STRUCTURE_BINARY_TRIE_HPP
 
-#line 1 "src/data-structure/binary_trie.hpp"
 
 
 #include <cassert>

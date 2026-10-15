@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_MISC_COMPRESS_HPP
 #define LIBRARY_MISC_COMPRESS_HPP
 
-#line 1 "src/misc/compress.hpp"
 
 
 #include <algorithm>

@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_MATH_PRIME_HPP
 #define LIBRARY_MATH_PRIME_HPP
 
-#line 1 "src/math/prime.hpp"
 
 
 #include <vector>

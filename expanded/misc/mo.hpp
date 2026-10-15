@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_MISC_MO_HPP
 #define LIBRARY_MISC_MO_HPP
 
-#line 1 "src/misc/mo.hpp"
 
 
 #include <algorithm>

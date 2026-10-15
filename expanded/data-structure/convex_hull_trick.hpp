@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_DATA_STRUCTURE_CONVEX_HULL_TRICK_HPP
 #define LIBRARY_DATA_STRUCTURE_CONVEX_HULL_TRICK_HPP
 
-#line 1 "src/data-structure/convex_hull_trick.hpp"
 
 
 #include <cassert>

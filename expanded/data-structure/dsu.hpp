@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_DATA_STRUCTURE_DSU_HPP
 #define LIBRARY_DATA_STRUCTURE_DSU_HPP
 
-#line 1 "src/data-structure/dsu.hpp"
 
 
 #include <vector>

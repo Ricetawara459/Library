@@ -1,7 +1,7 @@
+// Source: https://github.com/Ricetawara459/Library
 #ifndef LIBRARY_TREE_HLD_HPP
 #define LIBRARY_TREE_HLD_HPP
 
-#line 1 "src/tree/hld.hpp"
 
 
 #include <algorithm>

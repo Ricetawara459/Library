@@ -34,7 +34,7 @@ struct S {
     int min_count;
     int len;
 
-    /// デバッグ用。区間和を出力する。葉では配列の要素に等しい。
+    /// 区間和を出力する。葉では配列の要素に等しい。
     friend std::ostream& operator<<(std::ostream& os, const S& x) {
         return os << x.sum;
     }
@@ -178,7 +178,7 @@ struct range_chmin_chmax_add_sum {
     // 全体の総和を返す。
     ll all_sum() { return seg.all_prod().sum; }
 
-    /// デバッグ用。更新後の配列を [x, y, ...] 形式で出力する。時間・追加領域 O(n)。
+    /// 更新後の配列を空白区切りで出力する。末尾空白・改行なし。時間・追加領域 O(n)。
     friend std::ostream& operator<<(std::ostream& os, const range_chmin_chmax_add_sum& tree) {
         return os << tree.seg;
     }

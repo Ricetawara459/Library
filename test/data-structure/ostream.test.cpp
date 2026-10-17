@@ -60,22 +60,20 @@ std::string dump(const T& value) {
 
 std::string expected_output(const std::vector<value_type>& a) {
     std::ostringstream out;
-    out << '[';
     for (int i = 0; i < int(a.size()); i++) {
-        if (i) out << ", ";
+        if (i) out << ' ';
         out << a[i];
     }
-    out << ']';
     return out.str();
 }
 
 int main() {
-    assert(dump(sum_tree{}) == "[]");
-    assert(dump(lazy_tree{}) == "[]");
-    assert(dump(beats_tree{}) == "[]");
-    assert(dump(fenwick_tree<value_type>{}) == "[]");
-    assert(dump(sparse_table<value_type, min_value>{}) == "[]");
-    assert(dump(beats_chmin_chmax_sum::range_chmin_chmax_add_sum{}) == "[]");
+    assert(dump(sum_tree{}) == "");
+    assert(dump(lazy_tree{}) == "");
+    assert(dump(beats_tree{}) == "");
+    assert(dump(fenwick_tree<value_type>{}) == "");
+    assert(dump(sparse_table<value_type, min_value>{}) == "");
+    assert(dump(beats_chmin_chmax_sum::range_chmin_chmax_add_sum{}) == "");
 
     std::mt19937 rng(459);
     for (int n : {0, 1, 2, 3, 5, 16, 31, 257}) {
@@ -168,6 +166,6 @@ int main() {
     fenwick_tree<modint998244353> modular(3);
     modular.add(0, -1);
     modular.add(1, 2);
-    assert(dump(modular) == "[998244352, 2, 0]");
+    assert(dump(modular) == "998244352 2 0");
     assert(modular.sum(0, 3) == modint998244353(1));
 }

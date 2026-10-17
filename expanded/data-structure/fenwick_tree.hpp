@@ -31,7 +31,7 @@ struct fenwick_tree {
         return sum(r) - sum(l);
     }
 
-    /// デバッグ用。元の配列を [x, y, ...] 形式で出力する。T の << が必要。
+    /// 元の配列を空白区切りで出力する。末尾空白・改行なし。T の << が必要。
     /// コピーした区間和から各要素を復元する。時間・追加領域 O(n)。
     friend std::ostream& operator<<(std::ostream& os, const fenwick_tree& tree) {
         auto values = tree.data;
@@ -39,12 +39,11 @@ struct fenwick_tree {
             int parent = i + (i & -i);
             if (parent <= tree._n) values[parent - 1] = values[parent - 1] - values[i - 1];
         }
-        os << '[';
         for (int i = 0; i < tree._n; i++) {
-            if (i) os << ", ";
+            if (i) os << ' ';
             os << values[i];
         }
-        return os << ']';
+        return os;
     }
 
   private:

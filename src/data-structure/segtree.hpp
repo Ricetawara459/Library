@@ -60,14 +60,13 @@ struct segtree {
     /// 全区間 [0, n) の畳み込み結果を返す。
     S all_prod() const { return d[1]; }
 
-    /// デバッグ用。a[0], ..., a[n-1] を [x, y, ...] 形式で出力する。O(n)。S の << が必要。
+    /// 全要素を空白区切りで出力する。末尾空白・改行なし。O(n)。S の << が必要。
     friend std::ostream& operator<<(std::ostream& os, const segtree& seg) {
-        os << '[';
         for (int i = 0; i < seg._n; i++) {
-            if (i) os << ", ";
+            if (i) os << ' ';
             os << seg.d[seg.size + i];
         }
-        return os << ']';
+        return os;
     }
 
     /// l から右に伸ばして、条件 f が true である最大の右端を返す。

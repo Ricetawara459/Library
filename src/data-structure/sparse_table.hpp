@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cassert>
+#include <ostream>
 #include <vector>
 
 // Sparse Table。min/max/gcd などの冪等な演算に使う。
@@ -43,6 +44,16 @@ struct sparse_table {
 
     /// 管理している配列の長さを返す。
     int size() const { return _n; }
+
+    /// デバッグ用。元の配列を [x, y, ...] 形式で出力する。O(n)。S の << が必要。
+    friend std::ostream& operator<<(std::ostream& os, const sparse_table& st) {
+        os << '[';
+        for (int i = 0; i < st._n; i++) {
+            if (i) os << ", ";
+            os << st.table[0][i];
+        }
+        return os << ']';
+    }
 
   private:
     int _n = 0;

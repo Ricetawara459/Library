@@ -9,6 +9,7 @@
 //   seg.range_chmin(l, r, x);  // a[i] = min(a[i], x)
 //   seg.range_chmax(l, r, x);  // a[i] = max(a[i], x)
 //   long long s = seg.range_sum(l, r);
+//   cout << seg << '\n';      // 更新後の配列を出力
 //
 // 抽象化Beatsへ移植する時に見る場所:
 //   S は sum/max1/max2/max_count/min1/min2/min_count/len を持つ区間情報。
@@ -17,6 +18,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <ostream>
 #include <vector>
 
 using ll = long long;
@@ -31,6 +33,11 @@ struct S {
     ll min1, min2;
     int min_count;
     int len;
+
+    /// デバッグ用。区間和を出力する。葉では配列の要素に等しい。
+    friend std::ostream& operator<<(std::ostream& os, const S& x) {
+        return os << x.sum;
+    }
 };
 
 S make_node(ll x) { return {x, x, -INF, 1, x, INF, 1, 1}; }
@@ -170,5 +177,10 @@ struct range_chmin_chmax_add_sum {
     ll range_sum(int l, int r) { return seg.prod(l, r).sum; }
     // 全体の総和を返す。
     ll all_sum() { return seg.all_prod().sum; }
+
+    /// デバッグ用。更新後の配列を [x, y, ...] 形式で出力する。時間・追加領域 O(n)。
+    friend std::ostream& operator<<(std::ostream& os, const range_chmin_chmax_add_sum& tree) {
+        return os << tree.seg;
+    }
 };
 }  // namespace beats_chmin_chmax_sum

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <ostream>
 #include <vector>
 
 // 抽象化 Segment Tree Beats。
@@ -62,6 +63,19 @@ struct segtree_beats {
 
     /// 全区間 [0, n) の畳み込み結果を返す。
     S all_prod() { return prod(0, _n); }
+
+    /// デバッグ用。遅延反映後の全要素を [x, y, ...] 形式で出力する。S の << が必要。
+    /// コピー上で遅延を展開し、元の木は変更しない。時間・追加領域 O(n)。
+    friend std::ostream& operator<<(std::ostream& os, const segtree_beats& seg) {
+        auto copy = seg;
+        for (int k = 1; k < copy.size; k++) copy.push(k);
+        os << '[';
+        for (int i = 0; i < copy._n; i++) {
+            if (i) os << ", ";
+            os << copy.d[copy.size + i];
+        }
+        return os << ']';
+    }
 
     /// 一点に作用 f を適用する。
     void apply(int p, F f) {

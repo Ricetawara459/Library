@@ -7,11 +7,12 @@
 #include <vector>
 
 #include "../../src/misc/mo.hpp"
+#include "../../src/misc/mo_2d.hpp"
 
 using query = std::pair<int, int>;
 
 std::array<int, 4> test_points(int nx, int ny, const std::vector<query>& queries) {
-    mo_algorithm solver(nx, ny);
+    mo_algorithm_2d solver(nx, ny);
     for (auto [x, y] : queries) solver.add_query(x, y);
     assert(solver.size() == int(queries.size()));
 
@@ -29,7 +30,7 @@ std::array<int, 4> test_points(int nx, int ny, const std::vector<query>& queries
     for (int repeat = 0; repeat < 2; repeat++) {
         int x = 0, y = 0, sum = 0;
         std::vector<int> seen(queries.size());
-        solver.run_xy(
+        solver.run(
             [&](int i) {
                 assert(i == x && x < nx);
                 for (int j = 0; j < y; j++) sum += a[i][j];
@@ -114,10 +115,11 @@ void test_intervals(int n, const std::vector<query>& queries) {
 int main() {
     mo_algorithm empty;
     auto unexpected = [](int) { assert(false); };
-    empty.run_xy(unexpected, unexpected, unexpected, unexpected, unexpected);
     empty.run(unexpected, unexpected, unexpected);
-    empty.add_query(0, 0);
-    empty.run_xy(unexpected, unexpected, unexpected, unexpected, [](int id) { assert(id == 0); });
+    mo_algorithm_2d empty_2d;
+    empty_2d.run(unexpected, unexpected, unexpected, unexpected, unexpected);
+    empty_2d.add_query(0, 0);
+    empty_2d.run(unexpected, unexpected, unexpected, unexpected, [](int id) { assert(id == 0); });
 
     auto moves = test_points(5, 7, {{0, 0}, {5, 0}, {5, 7}, {0, 7}, {3, 1}, {1, 6}, {4, 2}});
     for (int count : moves) assert(count > 0);

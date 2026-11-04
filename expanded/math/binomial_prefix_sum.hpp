@@ -192,6 +192,9 @@ struct binomial_prefix_sum {
     /// 初期状態 (n, r) を作る。n >= 0, 0 <= r <= n+1。値は sum_{i=0}^{r-1} C(n,i)。
     binomial_prefix_sum(int n, int r) { reset(n, r); }
 
+    /// n までの階乗・逆階乗を前計算する。状態は変えず、この範囲の各隣接移動を O(1) にする。
+    void extend(int n) { fac.extend(n); }
+
     /// 状態を (n, r) に作り直す。n >= 0, 0 <= r <= n+1。
     void reset(int n, int r) {
         assert(0 <= n && 0 <= r && r <= n + 1);
@@ -212,49 +215,53 @@ struct binomial_prefix_sum {
     /// 現在の sum_{i=0}^{r-1} C(n,i) を返す。r == n+1 なら 2^n。
     mint get() const { return _sum; }
 
-    /// r を 1 増やす。r <= n が必要。F(n,r+1) = F(n,r) + C(n,r)。
+    /// r を 1 増やす。r <= n が必要。F(n,r+1) = F(n,r) + C(n,r)。O(1)。
     void inc_r() {
         assert(_r <= _n);
         _sum += _comb;
-        _comb = (_r == _n ? mint(0) : _comb * mint(_n - _r) / mint(_r + 1));
+        _comb = (_r == _n ? mint(0) : _comb * mint(_n - _r) * inverse(_r + 1));
         _r++;
     }
 
-    /// r を 1 減らす。F(n,r-1) = F(n,r) - C(n,r-1)。
+    /// r を 1 減らす。F(n,r-1) = F(n,r) - C(n,r-1)。O(1)。
     void dec_r() {
         assert(_r > 0);
-        _comb = (_r > _n ? mint(1) : _comb * mint(_r) / mint(_n - _r + 1));
+        _comb = (_r > _n ? mint(1) : _comb * mint(_r) * inverse(_n - _r + 1));
         _r--;
         _sum -= _comb;
     }
 
     /// n を 1 増やす。F(n+1,r) = 2F(n,r) - C(n,r-1)。
+    /// 前計算範囲内なら O(1)。範囲外なら必要な前計算を拡張する。
     void inc_n() {
+        fac.extend(_n + 1);
         if (_r > _n) {
             _sum += _sum - mint(1);
             _n++;
             _comb = 1;
             return;
         }
-        mint prev = (_r == 0 ? mint(0) : _comb * mint(_r) / mint(_n - _r + 1));
+        mint inv = inverse(_n - _r + 1);
+        mint prev = (_r == 0 ? mint(0) : _comb * mint(_r) * inv);
         _sum += _sum - prev;
         _n++;
         _comb *= mint(_n);
-        _comb /= mint(_n - _r);
+        _comb *= inv;
     }
 
-    /// n を 1 減らす。n > 0, r <= n が必要。
+    /// n を 1 減らす。n > 0, r <= n が必要。O(1)。
     void dec_n() {
         assert(_n > 0);
         assert(_r <= _n);
-        mint prev = (_r == 0 ? mint(0) : _comb * mint(_r) / mint(_n));
-        _sum = (_sum + prev) / mint(2);
+        mint inv = inverse(_n);
+        mint prev = (_r == 0 ? mint(0) : _comb * mint(_r) * inv);
+        _sum = (_sum + prev) * mint(mint::mod() / 2 + 1);
         _comb *= mint(_n - _r);
-        _comb /= mint(_n);
+        _comb *= inv;
         _n--;
     }
 
-    /// 隣接移動を繰り返して (n, r) に移動する。0 <= r <= n+1。移動距離に比例する。
+    /// 隣接移動を繰り返して (n, r) に移動する。0 <= r <= n+1。前計算範囲内では移動距離に比例する。
     void move(int n, int r) {
         assert(0 <= n && 0 <= r && r <= n + 1);
         while (_r > r) dec_r();
@@ -269,6 +276,9 @@ struct binomial_prefix_sum {
     mint _sum = 0;   // sum_{i=0}^{r-1} C(n,i)
     mint _comb = 1;  // C(n,r)
     factorial<mint> fac;
+
+    // 1/k = (k-1)! / k!。階乗テーブルの積だけで逆元を取得する。
+    mint inverse(int k) { return fac.fact(k - 1) * fac.fact_inv(k); }
 };
 
 #endif  // LIBRARY_MATH_BINOMIAL_PREFIX_SUM_HPP

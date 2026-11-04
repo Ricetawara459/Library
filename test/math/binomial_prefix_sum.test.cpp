@@ -39,6 +39,8 @@ void test_boundaries(int limit) {
         check(initial);
         initial.reset(n, r);
         check(initial);
+        initial.extend(limit);
+        check(initial);
         if (r <= n) {
             auto state = initial;
             state.inc_r();
@@ -94,6 +96,14 @@ void test_boundaries(int limit) {
         check(full);
         full.dec_n();
         check(full);
+    }
+
+    binomial_prefix_sum<Mint> prepared;
+    prepared.extend(limit);
+    check(prepared);
+    for (auto [n, r] : states) {
+        prepared.move(n, r);
+        check(prepared);
     }
 }
 

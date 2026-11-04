@@ -61,8 +61,8 @@ struct segtree_beats {
         return prod_rec(l, r, 1, 0, size);
     }
 
-    /// 全区間 [0, n) の畳み込み結果を返す。
-    S all_prod() { return prod(0, _n); }
+    /// 全区間 [0, n) の畳み込み結果を O(1) で返す。
+    S all_prod() const { return d[1]; }
 
     /// 遅延反映後の全要素を空白区切りで出力する。末尾空白・改行なし。S の << が必要。
     /// コピー上で遅延を展開し、元の木は変更しない。時間・追加領域 O(n)。

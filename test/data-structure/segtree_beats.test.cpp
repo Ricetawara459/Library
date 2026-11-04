@@ -13,7 +13,28 @@ void expect(bool ok) {
 
 using namespace beats_chmin_chmax_sum;
 
+namespace all_prod_test {
+struct node { ll sum; int len; };
+int calls = 0;
+node merge(node a, node b) { calls++; return {a.sum + b.sum, a.len + b.len}; }
+node empty() { return {0, 0}; }
+bool apply(int f, node& x) { calls++; x.sum += ll(f) * x.len; return true; }
+int compose(int f, int g) { return f + g; }
+int identity() { return 0; }
+using tree = segtree_beats<node, merge, empty, int, apply, compose, identity>;
+}
+
 int main() {
+    for (int n : {0, 1, 5, 255, 65535}) {
+        all_prod_test::tree seg(std::vector<all_prod_test::node>(n, {1, 1}));
+        seg.apply(0, n, 7);
+        if (n) seg.set(n - 1, {11, 1});
+        all_prod_test::calls = 0;
+        const auto& view = seg;
+        expect(view.all_prod().sum == 8LL * n + (n ? 3 : 0));
+        expect(all_prod_test::calls == 0);
+    }
+
     std::mt19937 rng(123456789);
     for (int tc = 0; tc < 200; tc++) {
         int n = 1 + int(rng() % 40);

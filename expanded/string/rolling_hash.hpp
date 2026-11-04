@@ -46,6 +46,7 @@ struct rolling_hash {
         return res;
     }
 
+    // 右側の累積ハッシュ。左追加分は left_hash_table で別に管理する。
     std::vector<u64> hash_table{0};
 
     rolling_hash() = default;
@@ -56,6 +57,7 @@ struct rolling_hash {
     template <typename T>
     void build(const T& s) {
         int n = int(s.size());
+        left_hash_table.assign(1, 0);
         hash_table.resize(n + 1, 0);
         extend_pow(n);
         u64 b = get_base();
@@ -71,24 +73,34 @@ struct rolling_hash {
         }
     }
 
-    /// 半開区間 [l, r) のハッシュを返す。
+    /// 半開区間 [l, r) のハッシュを O(1) で返す。左右連結後も使える。
     u64 get(int l, int r) const {
-        u64 res = hash_table[r] + MOD - mul(hash_table[l], pow_table[r - l]);
+        int left_size = int(left_hash_table.size()) - 1;
+        u64 res;
+        if (r <= left_size) {
+            res = mul(left_hash_table[left_size - l], pow_table[r - l]) + MOD
+                  - left_hash_table[left_size - r];
+        } else if (l >= left_size) {
+            res = hash_table[r - left_size] + MOD
+                  - mul(hash_table[l - left_size], pow_table[r - l]);
+        } else {
+            res = mul(left_hash_table[left_size - l], pow_table[r - l])
+                  + hash_table[r - left_size];
+        }
         if (res >= MOD) res -= MOD;
         return res;
     }
 
     /// 現在の列の長さを返す。
     int size() const {
-        return int(hash_table.size()) - 1;
+        return int(hash_table.size() + left_hash_table.size()) - 2;
     }
 
-    /// 現在の列の右に文字列 s を連結する。計算量 O(|s|)。
+    /// 現在の列の右に文字列 s を連結する。償却 O(|s|)。
     void concat_right(const std::string& s) {
         int old_size = size();
         int add_size = int(s.size());
         extend_pow(old_size + add_size);
-        hash_table.reserve(old_size + add_size + 1);
         u64 b = get_base();
         for (char c : s) {
             u64 next = mul(hash_table.back(), b) + static_cast<unsigned char>(c);
@@ -97,7 +109,7 @@ struct rolling_hash {
         }
     }
 
-    /// 現在の列の右に文字 c を連結する。計算量 O(1)。
+    /// 現在の列の右に文字 c を連結する。償却 O(1)。
     void concat_right(char c) {
         extend_pow(size() + 1);
         u64 next = mul(hash_table.back(), get_base()) + static_cast<unsigned char>(c);
@@ -105,36 +117,17 @@ struct rolling_hash {
         hash_table.push_back(next);
     }
 
-    /// 現在の列の左に文字列 s を連結する。計算量 O(size() + |s|)。
+    /// 現在の列の左に文字列 s を連結する。償却 O(|s|)。
     void concat_left(const std::string& s) {
-        if (s.empty()) return;
-        int left_size = int(s.size());
-        int old_size = size();
-        extend_pow(left_size + old_size);
-
-        std::vector<u64> next(left_size + old_size + 1, 0);
-        u64 b = get_base();
-        for (int i = 0; i < left_size; i++) {
-            next[i + 1] = mul(next[i], b) + static_cast<unsigned char>(s[i]);
-            if (next[i + 1] >= MOD) next[i + 1] -= MOD;
-        }
-        u64 left_hash = next[left_size];
-        for (int i = 1; i <= old_size; i++) {
-            next[left_size + i] = connect(left_hash, hash_table[i], i);
-        }
-        hash_table.swap(next);
+        for (auto it = s.rbegin(); it != s.rend(); ++it) concat_left(*it);
     }
 
-    /// 現在の列の左に文字 c を連結する。計算量 O(size())。
+    /// 現在の列の左に文字 c を連結する。償却 O(1)。
     void concat_left(char c) {
-        int old_size = size();
-        extend_pow(old_size + 1);
-        u64 value = static_cast<unsigned char>(c);
-        hash_table.resize(old_size + 2);
-        for (int i = old_size; i >= 1; i--) {
-            hash_table[i + 1] = connect(value, hash_table[i], i);
-        }
-        hash_table[1] = value;
+        extend_pow(size() + 1);
+        u64 next = left_hash_table.back() + static_cast<unsigned char>(c);
+        if (next >= MOD) next -= MOD;
+        left_hash_table.push_back(mul(next, get_base_inverse()));
     }
 
     /// ハッシュ h1 の後ろに長さ len2 の列のハッシュ h2 を連結する。
@@ -143,6 +136,22 @@ struct rolling_hash {
         u64 res = mul(h1, pow_table[len2]) + h2;
         if (res >= MOD) res -= MOD;
         return res;
+    }
+
+  private:
+    // k 文字時点の左追加分のハッシュ / base^k を蓄積する。
+    std::vector<u64> left_hash_table{0};
+
+    static u64 get_base_inverse() {
+        static const u64 inverse = [] {
+            u64 res = 1, b = get_base();
+            for (u64 e = MOD - 2; e > 0; e >>= 1) {
+                if (e & 1) res = mul(res, b);
+                b = mul(b, b);
+            }
+            return res;
+        }();
+        return inverse;
     }
 };
 

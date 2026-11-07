@@ -31,6 +31,38 @@ struct fenwick_tree {
         return sum(r) - sum(l);
     }
 
+    /// sum(0, i+1) >= x となる最小の i を返す。存在しなければ n。x <= 0 なら 0。
+    /// 全要素が非負で、T が順序比較可能であること。計算量 O(log n)。
+    int lower_bound(T x) const {
+        if (!(T(0) < x)) return 0;
+        int pos = 0, step = 1;
+        while (step <= _n / 2) step *= 2;
+        T acc = 0;
+        for (; step > 0; step /= 2) {
+            if (step <= _n - pos && acc + data[pos + step - 1] < x) {
+                acc += data[pos + step - 1];
+                pos += step;
+            }
+        }
+        return pos;
+    }
+
+    /// sum(0, i+1) > x となる最小の i を返す。存在しなければ n。x < 0 なら 0。
+    /// 全要素が非負で、T が順序比較可能であること。計算量 O(log n)。
+    int upper_bound(T x) const {
+        if (x < T(0)) return 0;
+        int pos = 0, step = 1;
+        while (step <= _n / 2) step *= 2;
+        T acc = 0;
+        for (; step > 0; step /= 2) {
+            if (step <= _n - pos && !(x < acc + data[pos + step - 1])) {
+                acc += data[pos + step - 1];
+                pos += step;
+            }
+        }
+        return pos;
+    }
+
     /// 元の配列を空白区切りで出力する。末尾空白・改行なし。T の << が必要。
     /// コピーした区間和から各要素を復元する。時間・追加領域 O(n)。
     friend std::ostream& operator<<(std::ostream& os, const fenwick_tree& tree) {

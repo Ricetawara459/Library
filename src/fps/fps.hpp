@@ -73,6 +73,29 @@ struct formal_power_series : std::vector<mint> {
         return res;
     }
 
+    /// 多項式 f(x+c) の係数列を返す。法は素数、係数数 n <= mod。計算量 O(n log n)。
+    fps taylor_shift(mint c) const {
+        int n = int(this->size());
+        assert(n <= mint::mod());
+        if (n == 0) return {};
+        if (c == mint(0)) return *this;
+        std::vector<mint> fact(n), inv_fact(n), a(n), b(n);
+        fact[0] = 1;
+        for (int i = 1; i < n; i++) fact[i] = fact[i - 1] * mint(i);
+        inv_fact[n - 1] = fact[n - 1].inv();
+        for (int i = n - 1; i > 0; i--) inv_fact[i - 1] = inv_fact[i] * mint(i);
+        mint power = 1;
+        for (int i = 0; i < n; i++) {
+            a[n - 1 - i] = (*this)[i] * fact[i];
+            b[i] = power * inv_fact[i];
+            power *= c;
+        }
+        auto product = convolution<mint>(std::move(a), std::move(b));
+        fps result(n);
+        for (int i = 0; i < n; i++) result[i] = product[n - 1 - i] * inv_fact[i];
+        return result;
+    }
+
     fps& operator+=(const fps& rhs) {
         if (this->size() < rhs.size()) this->resize(rhs.size());
         for (int i = 0; i < int(rhs.size()); i++) (*this)[i] += rhs[i];

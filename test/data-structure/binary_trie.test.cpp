@@ -19,7 +19,9 @@ int main() {
         } else if (t == 1) {
             if (bt.contains(x)) bt.erase(x);
         } else {
-            std::cout << bt.min_xor(x) << '\n';
+            bt.xor_all(x);
+            std::cout << bt.min_element() << '\n';
+            bt.xor_all(x);
         }
     }
     return 0;

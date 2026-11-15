@@ -424,6 +424,87 @@ inline std::vector<long long> convolution_ll(const std::vector<long long>& a,
 
 #endif  // LIBRARY_MATH_CONVOLUTION_HPP
 
+#ifndef LIBRARY_MATH_FACTORIAL_HPP
+#define LIBRARY_MATH_FACTORIAL_HPP
+
+
+
+#include <vector>
+
+
+
+template <class mint>
+struct factorial {
+  public:
+    factorial() : _n(0), _fact(1, mint(1)), _inv_fact(1, mint(1)) {}
+    explicit factorial(int n) : factorial() { extend(n); }
+
+    /// n! まで前計算を拡張する。
+    void extend(int n) {
+        if (n <= _n) return;
+        int next_n = _n == 0 ? 1 : _n;
+        while (next_n < n) next_n *= 2;
+
+        _fact.resize(next_n + 1);
+        _inv_fact.resize(next_n + 1);
+
+        // 新しく増えた区間の階乗を計算
+        for (int i = _n + 1; i <= next_n; i++) {
+            _fact[i] = _fact[i - 1] * i;
+        }
+        // 新しい末尾の逆元から逆順に埋める
+        _inv_fact[next_n] = _fact[next_n].inv();
+        for (int i = next_n - 1; i > _n; i--) {
+            _inv_fact[i] = _inv_fact[i + 1] * (i + 1);
+        }
+        _n = next_n;
+    }
+
+    /// n! を返す。n < 0 なら 0。
+    mint fact(int n) {
+        if (n < 0) return mint(0);
+        extend(n);
+        return _fact[n];
+    }
+
+    /// 1 / n! を返す。n < 0 なら 0。
+    mint fact_inv(int n) {
+        if (n < 0) return mint(0);
+        extend(n);
+        return _inv_fact[n];
+    }
+
+    /// 順列 nPr を返す。不正な範囲なら 0。
+    mint perm(int n, int r) {
+        if (r < 0 || n < r) return mint(0);
+        extend(n);
+        return _fact[n] * _inv_fact[n - r];
+    }
+
+    /// 組合せ nCr を返す。不正な範囲なら 0。
+    mint comb(int n, int r) {
+        if (r < 0 || n < r) return mint(0);
+        extend(n);
+        return _fact[n] * _inv_fact[r] * _inv_fact[n - r];
+    }
+
+    /// 重複組合せ nHr を返す。不正な範囲なら 0。
+    mint homo(int n, int r) {
+        if (n < 0 || r < 0) return mint(0);
+        if (n == 0 && r == 0) return mint(1);
+        return comb(n + r - 1, r);
+    }
+
+  private:
+    int _n;
+    std::vector<mint> _fact;     // privateに隠蔽
+    std::vector<mint> _inv_fact; // privateに隠蔽
+};
+
+factorial<mint> fc;
+
+#endif  // LIBRARY_MATH_FACTORIAL_HPP
+
 
 namespace fps_internal {
 
@@ -488,26 +569,24 @@ struct formal_power_series : std::vector<mint> {
         return res;
     }
 
-    /// 多項式 f(x+c) の係数列を返す。法は素数、係数数 n <= mod。計算量 O(n log n)。
+    /// 多項式 f(x+c) の係数列を返す。法は素数で、factorial の前計算範囲が法未満であること。
+    /// 係数数 n に対して O(n log n)。
     fps taylor_shift(mint c) const {
         int n = int(this->size());
         assert(n <= mint::mod());
         if (n == 0) return {};
         if (c == mint(0)) return *this;
-        std::vector<mint> fact(n), inv_fact(n), a(n), b(n);
-        fact[0] = 1;
-        for (int i = 1; i < n; i++) fact[i] = fact[i - 1] * mint(i);
-        inv_fact[n - 1] = fact[n - 1].inv();
-        for (int i = n - 1; i > 0; i--) inv_fact[i - 1] = inv_fact[i] * mint(i);
+        factorial<mint> fac(n - 1);
+        std::vector<mint> a(n), b(n);
         mint power = 1;
         for (int i = 0; i < n; i++) {
-            a[n - 1 - i] = (*this)[i] * fact[i];
-            b[i] = power * inv_fact[i];
+            a[n - 1 - i] = (*this)[i] * fac.fact(i);
+            b[i] = power * fac.fact_inv(i);
             power *= c;
         }
         auto product = convolution<mint>(std::move(a), std::move(b));
         fps result(n);
-        for (int i = 0; i < n; i++) result[i] = product[n - 1 - i] * inv_fact[i];
+        for (int i = 0; i < n; i++) result[i] = product[n - 1 - i] * fac.fact_inv(i);
         return result;
     }
 

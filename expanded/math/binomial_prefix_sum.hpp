@@ -122,10 +122,10 @@ struct factorial {
         if (n <= _n) return;
         int next_n = _n == 0 ? 1 : _n;
         while (next_n < n) next_n *= 2;
-        
+
         _fact.resize(next_n + 1);
         _inv_fact.resize(next_n + 1);
-        
+
         // 新しく増えた区間の階乗を計算
         for (int i = _n + 1; i <= next_n; i++) {
             _fact[i] = _fact[i - 1] * i;

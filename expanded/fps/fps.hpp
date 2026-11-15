@@ -628,6 +628,107 @@ struct formal_power_series : std::vector<mint> {
     friend fps operator*(const mint& lhs, fps rhs) { return rhs *= lhs; }
     friend fps operator/(fps lhs, const mint& rhs) { return lhs /= rhs; }
 
+    /// 多項式除算の商を返す。除数は0多項式でないこと。末尾の0は除去する。O(n log n)。
+    fps div(const fps& divisor) const {
+        fps a = *this, b = divisor;
+        a.shrink();
+        b.shrink();
+        assert(!b.empty());
+        if (a.size() < b.size()) return {};
+        if (b.size() == 1) {
+            a /= b[0];
+            return a;
+        }
+        int count = int(a.size() - b.size() + 1);
+        std::reverse(a.begin(), a.end());
+        std::reverse(b.begin(), b.end());
+        fps result = a.mul_pre(b.inv(count), count);
+        result.resize(count);
+        std::reverse(result.begin(), result.end());
+        result.shrink();
+        return result;
+    }
+
+    /// 多項式除算の {商, 余り} を返す。0多項式は空列。除数は0多項式でないこと。O(n log n)。
+    std::pair<fps, fps> divmod(const fps& divisor) const {
+        fps b = divisor;
+        b.shrink();
+        assert(!b.empty());
+        fps quotient = div(b);
+        fps remainder = *this;
+        if (!quotient.empty()) remainder -= quotient * b;
+        if (remainder.size() >= b.size()) remainder.resize(b.size() - 1);
+        remainder.shrink();
+        return {std::move(quotient), std::move(remainder)};
+    }
+
+    fps& operator/=(const fps& rhs) { return *this = div(rhs); }
+    fps& operator%=(const fps& rhs) { return *this = divmod(rhs).second; }
+    friend fps operator/(const fps& lhs, const fps& rhs) { return lhs.div(rhs); }
+    friend fps operator%(const fps& lhs, const fps& rhs) { return lhs.divmod(rhs).second; }
+
+    /// 各点 xs[i] での多項式の値を順に返す。重複する点や0も扱える。
+    /// 転置積木を用いる。係数数と点数の最大を n として O(n log^2 n)。
+    /// 畳み込み可能な長さ・法の制約は convolution と同じ。
+    std::vector<mint> multipoint_eval(const std::vector<mint>& xs) const {
+        int m = int(xs.size()), n = int(this->size());
+        if (m == 0) return {};
+        std::vector<mint> result(m);
+        if (n == 0) return result;
+        if (m <= 8 || n <= 16) {
+            for (int i = 0; i < m; i++) result[i] = eval(xs[i]);
+            return result;
+        }
+
+        int size = 1;
+        while (size < m) size <<= 1;
+        std::vector<fps> tree(2 * size), values(2 * size);
+        for (int i = 0; i < size; i++) tree[size + i] = {1, i < m ? -xs[i] : mint(0)};
+        for (int i = size - 1; i > 0; i--) tree[i] = tree[2 * i] * tree[2 * i + 1];
+
+        // 乗算の転置: result[i] = sum_j a[i+j] * b[j]。
+        std::vector<mint> inv_pow2{1};
+        auto transposed_product = [&](const fps& a, const fps& b) -> fps {
+            assert(a.size() >= b.size() && !b.empty());
+            if constexpr (mint::mod() == 998244353) {
+                if (b.size() > convolution_internal::naive_threshold) {
+                    int z = 1, log = 0;
+                    while (z < int(a.size())) { z <<= 1; log++; }
+                    assert((mint::mod() - 1) % z == 0);
+                    // 巡回積の折り返しは b.size()-1 より前にだけ現れる。
+                    std::vector<mint> x(z), y(z);
+                    std::copy(a.begin(), a.end(), x.begin());
+                    std::copy(b.rbegin(), b.rend(), y.begin());
+                    convolution_internal::butterfly<mint, 3>(x);
+                    convolution_internal::butterfly<mint, 3>(y);
+                    for (int i = 0; i < z; i++) x[i] *= y[i];
+                    convolution_internal::butterfly_inv<mint, 3>(x);
+                    while (int(inv_pow2.size()) <= log) inv_pow2.push_back(inv_pow2.back() * mint(499122177));
+                    fps result(a.size() - b.size() + 1);
+                    for (int i = 0; i < int(result.size()); i++) result[i] = x[b.size() - 1 + i] * inv_pow2[log];
+                    return result;
+                }
+            }
+            fps reversed(b.rbegin(), b.rend());
+            auto product = convolution<mint>(a, reversed);
+            return fps(product.begin() + b.size() - 1, product.begin() + a.size());
+        };
+        fps inverse = tree[1].pre(n);
+        inverse.resize(n);
+        inverse = inverse.inv(n);
+        fps padded = *this;
+        padded.resize(2 * n - 1);
+        values[1] = transposed_product(padded, inverse);
+        values[1].resize(size);
+        for (int i = 1; i < size; i++) {
+            values[2 * i] = transposed_product(values[i], tree[2 * i + 1]);
+            values[2 * i + 1] = transposed_product(values[i], tree[2 * i]);
+            fps().swap(values[i]);
+        }
+        for (int i = 0; i < m; i++) result[i] = values[size + i][0];
+        return result;
+    }
+
     /// rhs と掛けて deg 項までに切る。
     fps mul_pre(const fps& rhs, int deg) const {
         if (deg <= 0) return {};
